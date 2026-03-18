@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TradeWise | Portfolio</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      color: white;
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.08), transparent 18%),
+        radial-gradient(circle at top right, rgba(34, 197, 94, 0.08), transparent 16%),
+        linear-gradient(180deg, #040b16, #07111f 42%, #0b1220 100%);
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 22px 36px;
+      background: rgba(4, 11, 22, 0.75);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .logo {
+      font-size: 32px;
+      font-weight: bold;
+      color: #38bdf8;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #dbeafe;
+      font-size: 15px;
+      transition: 0.3s ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: #38bdf8;
+    }
+
+    .container {
+      padding: 30px 36px 50px;
+    }
+
+    .portfolio-hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: 30px;
+      min-height: 290px;
+      margin-bottom: 24px;
+      background:
+        linear-gradient(rgba(4, 11, 22, 0.42), rgba(4, 11, 22, 0.78)),
+        url("./assets/images/bg.jpg") center/cover no-repeat;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 28px 70px rgba(0, 0, 0, 0.32);
+      display: flex;
+      align-items: center;
+      padding: 34px;
+    }
+
+    .portfolio-hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 22%),
+        radial-gradient(circle at bottom right, rgba(34, 197, 94, 0.14), transparent 24%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 760px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.13);
+      border: 1px solid rgba(56, 189, 248, 0.32);
+      color: #7dd3fc;
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
+
+    .hero-content h1 {
+      font-size: 46px;
+      line-height: 1.12;
+      margin-bottom: 14px;
+      text-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+    }
+
+    .hero-content p {
+      max-width: 700px;
+      color: #e2e8f0;
+      font-size: 17px;
+      line-height: 1.8;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .summary-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 24px;
+      padding: 22px;
+      background: linear-gradient(135deg, rgba(13, 22, 38, 0.98), rgba(7, 14, 27, 0.98));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24);
+    }
+
+    .summary-card::after {
+      content: "";
+      position: absolute;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      right: -30px;
+      top: -30px;
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    .summary-card .label {
+      position: relative;
+      z-index: 1;
+      color: #94a3b8;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .summary-card h2 {
+      position: relative;
+      z-index: 1;
+      font-size: 32px;
+      margin-bottom: 8px;
+      color: #ffffff;
+    }
+
+    .summary-card .sub {
+      position: relative;
+      z-index: 1;
+      font-size: 14px;
+      color: #cbd5e1;
+    }
+
+    .positive {
+      color: #22c55e;
+      font-weight: bold;
+    }
+
+    .negative {
+      color: #f87171;
+      font-weight: bold;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.55fr 0.95fr;
+      gap: 22px;
+    }
+
+    .panel {
+      border-radius: 28px;
+      padding: 24px;
+      background: linear-gradient(135deg, rgba(13, 22, 38, 0.98), rgba(7, 14, 27, 0.98));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .panel-header h2 {
+      font-size: 28px;
+      color: #f8fafc;
+    }
+
+    .panel-header p,
+    .panel-header a {
+      color: #94a3b8;
+      font-size: 14px;
+      text-decoration: none;
+    }
+
+    .holdings-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .holding-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 22px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: 0.3s ease;
+    }
+
+    .holding-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(56, 189, 248, 0.35);
+    }
+
+    .holding-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .holding-top h3 {
+      font-size: 22px;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+
+    .holding-top p {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
+    .holding-value {
+      text-align: right;
+    }
+
+    .holding-value .price {
+      font-size: 24px;
+      font-weight: bold;
+      color: #38bdf8;
+      margin-bottom: 4px;
+    }
+
+    .holding-meta {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .meta-box {
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .meta-box .meta-label {
+      color: #94a3b8;
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .meta-box .meta-value {
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .holding-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      flex: 1;
+      min-width: 110px;
+      border: none;
+      border-radius: 14px;
+      padding: 13px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      transition: 0.3s ease;
+    }
+
+    .buy-btn {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: white;
+    }
+
+    .sell-btn {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+    }
+
+    .details-btn {
+      background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+      color: #081120;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .allocation-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .allocation-card {
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .allocation-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 10px;
+    }
+
+    .allocation-top h4 {
+      font-size: 18px;
+      color: #ffffff;
+    }
+
+    .allocation-top span {
+      color: #38bdf8;
+      font-weight: bold;
+    }
+
+    .progress-bar {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .progress {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+    }
+
+    .allocation-card p {
+      color: #cbd5e1;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 1150px) {
+      .summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .holding-meta {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 18px 20px;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .container {
+        padding: 22px 18px 40px;
+      }
+
+      .portfolio-hero,
+      .panel {
+        padding: 20px;
+      }
+
+      .hero-content h1 {
+        font-size: 34px;
+      }
+
+      .summary-grid,
+      .holding-meta {
+        grid-template-columns: 1fr;
+      }
+
+      .panel-header h2 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">TradeWise</div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="market.html">Market</a>
+      <a href="portfolio.html" class="active">Portfolio</a>
+      <a href="watchlist.html">Watchlist</a>
+      <a href="transactions.html">Transactions</a>
+      <a href="login.html">Logout</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <section class="portfolio-hero">
+      <div class="hero-content">
+        <div class="badge">Portfolio Intelligence</div>
+        <h1>Track Your Holdings with Confidence</h1>
+        <p>
+          Analyze your stock positions, monitor performance, review profits and losses,
+          and manage your investment distribution through a premium portfolio experience.
+        </p>
+      </div>
+    </section>
+
+    <section class="summary-grid">
+      <div class="summary-card">
+        <div class="label">Total Portfolio Value</div>
+        <h2>₹1,24,500</h2>
+        <div class="sub positive">+12.4% overall growth</div>
+      </div>
+
+      <div class="summary-card">
+        <div class="label">Total Invested</div>
+        <h2>₹1,10,300</h2>
+        <div class="sub">Capital currently deployed</div>
+      </div>
+
+      <div class="summary-card">
+        <div class="label">Net Profit / Loss</div>
+        <h2>+₹14,200</h2>
+        <div class="sub positive">Profitable portfolio status</div>
+      </div>
+
+      <div class="summary-card">
+        <div class="label">Holdings Count</div>
+        <h2>04</h2>
+        <div class="sub">Diversified across sectors</div>
+      </div>
+    </section>
+
+    <section class="main-grid">
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Your Holdings</h2>
+            <p>Dynamic-ready holdings list connected to future backend portfolio data.</p>
+          </div>
+        </div>
+
+        <div class="holdings-list" id="holdingsList"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Allocation</h2>
+            <p>Sector and stock-wise investment split.</p>
+          </div>
+        </div>
+
+        <div class="allocation-list">
+          <div class="allocation-card">
+            <div class="allocation-top">
+              <h4>TCS</h4>
+              <span>32%</span>
+            </div>
+            <div class="progress-bar"><div class="progress" style="width: 32%;"></div></div>
+            <p>Largest allocation in IT segment with strong return potential.</p>
+          </div>
+
+          <div class="allocation-card">
+            <div class="allocation-top">
+              <h4>HDFCBANK</h4>
+              <span>24%</span>
+            </div>
+            <div class="progress-bar"><div class="progress" style="width: 24%;"></div></div>
+            <p>Major banking allocation supporting diversified balance.</p>
+          </div>
+
+          <div class="allocation-card">
+            <div class="allocation-top">
+              <h4>RELIANCE</h4>
+              <span>27%</span>
+            </div>
+            <div class="progress-bar"><div class="progress" style="width: 27%;"></div></div>
+            <p>Energy and diversified market exposure through large-cap holding.</p>
+          </div>
+
+          <div class="allocation-card">
+            <div class="allocation-top">
+              <h4>INFY</h4>
+              <span>17%</span>
+            </div>
+            <div class="progress-bar"><div class="progress" style="width: 17%;"></div></div>
+            <p>Secondary IT holding contributing to growth-focused exposure.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const holdings = [
+      {
+        symbol: "TCS",
+        company: "Tata Consultancy Services",
+        quantity: 10,
+        avgPrice: 3600,
+        currentPrice: 3950,
+        sector: "IT"
+      },
+      {
+        symbol: "HDFCBANK",
+        company: "HDFC Bank",
+        quantity: 12,
+        avgPrice: 1490,
+        currentPrice: 1580,
+        sector: "Banking"
+      },
+      {
+        symbol: "RELIANCE",
+        company: "Reliance Industries",
+        quantity: 6,
+        avgPrice: 2700,
+        currentPrice: 2800,
+        sector: "Energy"
+      },
+      {
+        symbol: "INFY",
+        company: "Infosys",
+        quantity: 8,
+        avgPrice: 1380,
+        currentPrice: 1450,
+        sector: "IT"
+      }
+    ];
+
+    const holdingsList = document.getElementById("holdingsList");
+
+    function renderHoldings() {
+      holdingsList.innerHTML = holdings.map(stock => {
+        const invested = stock.quantity * stock.avgPrice;
+        const currentValue = stock.quantity * stock.currentPrice;
+        const pnl = currentValue - invested;
+        const pnlClass = pnl >= 0 ? "positive" : "negative";
+
+        return `
+          <div class="holding-card">
+            <div class="holding-top">
+              <div>
+                <h3>${stock.symbol}</h3>
+                <p>${stock.company}</p>
+              </div>
+              <div class="holding-value">
+                <div class="price">₹${currentValue.toLocaleString()}</div>
+                <div class="${pnlClass}">${pnl >= 0 ? "+" : ""}₹${pnl.toLocaleString()}</div>
+              </div>
+            </div>
+
+            <div class="holding-meta">
+              <div class="meta-box">
+                <div class="meta-label">Quantity</div>
+                <div class="meta-value">${stock.quantity}</div>
+              </div>
+              <div class="meta-box">
+                <div class="meta-label">Avg Buy Price</div>
+                <div class="meta-value">₹${stock.avgPrice}</div>
+              </div>
+              <div class="meta-box">
+                <div class="meta-label">Current Price</div>
+                <div class="meta-value">₹${stock.currentPrice}</div>
+              </div>
+              <div class="meta-box">
+                <div class="meta-label">Sector</div>
+                <div class="meta-value">${stock.sector}</div>
+              </div>
+            </div>
+
+            <div class="holding-actions">
+              <button class="action-btn buy-btn" onclick="buyMore('${stock.symbol}')">Buy More</button>
+              <button class="action-btn sell-btn" onclick="sellHolding('${stock.symbol}')">Sell</button>
+              <button class="action-btn details-btn" onclick="viewDetails('${stock.symbol}')">Details</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function buyMore(symbol) {
+      alert(`Buy more clicked for ${symbol}. This will later connect to backend.`);
+    }
+
+    function sellHolding(symbol) {
+      alert(`Sell clicked for ${symbol}. This will later connect to backend.`);
+    }
+
+    function viewDetails(symbol) {
+      alert(`Details clicked for ${symbol}. This will later connect to backend.`);
+    }
+
+    renderHoldings();
+  </script>
+</body>
+</html>
