@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TradeWise | Market</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      color: white;
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.09), transparent 18%),
+        radial-gradient(circle at top right, rgba(34, 197, 94, 0.08), transparent 16%),
+        linear-gradient(180deg, #040b16, #07111f 42%, #0b1220 100%);
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 22px 36px;
+      background: rgba(4, 11, 22, 0.75);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .logo {
+      font-size: 32px;
+      font-weight: bold;
+      color: #38bdf8;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #dbeafe;
+      font-size: 15px;
+      transition: 0.3s ease;
+      position: relative;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: #38bdf8;
+    }
+
+    .container {
+      padding: 30px 36px 50px;
+    }
+
+    .market-hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: 30px;
+      min-height: 330px;
+      margin-bottom: 24px;
+      background:
+        linear-gradient(rgba(4, 11, 22, 0.42), rgba(4, 11, 22, 0.78)),
+        url("./assets/images/market-bg.jpeg") center/cover no-repeat;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 28px 70px rgba(0, 0, 0, 0.32);
+      display: flex;
+      align-items: center;
+      padding: 34px;
+    }
+
+    .market-hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 22%),
+        radial-gradient(circle at bottom right, rgba(34, 197, 94, 0.14), transparent 24%);
+      pointer-events: none;
+    }
+
+    .hero-grid {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1.45fr 0.95fr;
+      gap: 24px;
+      align-items: end;
+    }
+
+    .hero-left .badge {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.13);
+      border: 1px solid rgba(56, 189, 248, 0.32);
+      color: #7dd3fc;
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
+
+    .hero-left h1 {
+      font-size: 48px;
+      line-height: 1.12;
+      margin-bottom: 14px;
+      text-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+    }
+
+    .hero-left p {
+      max-width: 700px;
+      color: #e2e8f0;
+      font-size: 17px;
+      line-height: 1.8;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 24px;
+      max-width: 780px;
+    }
+
+    .hero-stat {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(8px);
+    }
+
+    .hero-stat h3 {
+      font-size: 24px;
+      color: #38bdf8;
+      margin-bottom: 6px;
+    }
+
+    .hero-stat p {
+      font-size: 13px;
+      line-height: 1.5;
+      color: #dbeafe;
+    }
+
+    .hero-right {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .glass-panel {
+      width: 100%;
+      max-width: 360px;
+      border-radius: 24px;
+      padding: 22px;
+      background: rgba(5, 12, 24, 0.56);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
+    }
+
+    .glass-panel h3 {
+      font-size: 23px;
+      margin-bottom: 10px;
+      color: #f8fafc;
+    }
+
+    .glass-panel p {
+      color: #cbd5e1;
+      font-size: 14px;
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+
+    .pulse-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .pulse-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 13px 15px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .pulse-item strong {
+      font-size: 15px;
+      color: #ffffff;
+    }
+
+    .positive {
+      color: #22c55e;
+      font-weight: bold;
+    }
+
+    .negative {
+      color: #f87171;
+      font-weight: bold;
+    }
+
+    .middle-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 22px;
+      margin-bottom: 22px;
+    }
+
+    .panel {
+      border-radius: 26px;
+      padding: 24px;
+      background: linear-gradient(135deg, rgba(13, 22, 38, 0.98), rgba(7, 14, 27, 0.98));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .panel-header h2 {
+      font-size: 28px;
+      color: #f8fafc;
+    }
+
+    .panel-header p {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr 1fr;
+      gap: 14px;
+    }
+
+    .search-box input,
+    .filter-box select {
+      width: 100%;
+      padding: 14px 15px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.06);
+      color: white;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .search-box input::placeholder {
+      color: #94a3b8;
+    }
+
+    .filter-box select option {
+      color: black;
+    }
+
+    .highlights-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .highlight-card {
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .highlight-card h4 {
+      font-size: 18px;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+
+    .highlight-card p {
+      color: #cbd5e1;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+
+    .stocks-panel {
+      border-radius: 28px;
+      padding: 24px;
+      background: linear-gradient(135deg, rgba(13, 22, 38, 0.98), rgba(7, 14, 27, 0.98));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24);
+    }
+
+    .stocks-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .stock-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 24px;
+      padding: 22px;
+      background:
+        linear-gradient(160deg, rgba(17, 27, 46, 0.96), rgba(8, 16, 29, 0.96));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 14px 35px rgba(0, 0, 0, 0.22);
+      transition: 0.3s ease;
+    }
+
+    .stock-card::after {
+      content: "";
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      right: -35px;
+      top: -35px;
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    .stock-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(56, 189, 248, 0.35);
+    }
+
+    .stock-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 12px;
+      margin-bottom: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stock-top h3 {
+      font-size: 22px;
+      margin-bottom: 4px;
+      color: #ffffff;
+    }
+
+    .stock-top p {
+      color: #94a3b8;
+      font-size: 14px;
+      line-height: 1.5;
+      max-width: 220px;
+    }
+
+    .stock-price {
+      text-align: right;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stock-price .price {
+      font-size: 24px;
+      font-weight: bold;
+      color: #38bdf8;
+      margin-bottom: 4px;
+    }
+
+    .stock-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+      color: #cbd5e1;
+      font-size: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stock-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
+
+    .action-btn {
+      flex: 1;
+      min-width: 100px;
+      border: none;
+      border-radius: 14px;
+      padding: 13px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      transition: 0.3s ease;
+    }
+
+    .buy-btn {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: white;
+    }
+
+    .sell-btn {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+    }
+
+    .watch-btn {
+      background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+      color: #081120;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 1150px) {
+      .hero-grid,
+      .middle-grid,
+      .controls-grid,
+      .stocks-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-right {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 18px 20px;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .container {
+        padding: 22px 18px 40px;
+      }
+
+      .market-hero,
+      .panel,
+      .stocks-panel {
+        padding: 20px;
+      }
+
+      .hero-left h1 {
+        font-size: 34px;
+      }
+
+      .panel-header h2 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">TradeWise</div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="market.html" class="active">Market</a>
+      <a href="portfolio.html">Portfolio</a>
+      <a href="watchlist.html">Watchlist</a>
+      <a href="transactions.html">Transactions</a>
+      <a href="login.html">Logout</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <section class="market-hero">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="badge">Premium Trading Terminal</div>
+          <h1>Discover Market Momentum Like a Pro</h1>
+          <p>
+            Track leading stocks, observe market movement, filter opportunities,
+            and execute buy or sell actions through a more polished, data-ready,
+            finance-inspired interface.
+          </p>
+
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <h3>150+</h3>
+              <p>Stocks can later be plugged in from backend APIs and database.</p>
+            </div>
+            <div class="hero-stat">
+              <h3>Live</h3>
+              <p>Designed for dynamic data flow and near real-time style updates.</p>
+            </div>
+            <div class="hero-stat">
+              <h3>Smart</h3>
+              <p>Built to support search, filter, trading flow, and watchlist actions.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-right">
+          <div class="glass-panel">
+            <h3>Market Pulse</h3>
+            <p>Quick overview of important market indicators and sector movement.</p>
+
+            <div class="pulse-list">
+              <div class="pulse-item">
+                <strong>NIFTY 50</strong>
+                <span class="positive">+0.84%</span>
+              </div>
+              <div class="pulse-item">
+                <strong>SENSEX</strong>
+                <span class="positive">+0.73%</span>
+              </div>
+              <div class="pulse-item">
+                <strong>IT Sector</strong>
+                <span class="positive">+1.26%</span>
+              </div>
+              <div class="pulse-item">
+                <strong>Banking</strong>
+                <span class="negative">-0.18%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="middle-grid">
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Explore the Market</h2>
+            <p>Search, sort, and filter stocks in a dynamic-ready layout.</p>
+          </div>
+        </div>
+
+        <div class="controls-grid">
+          <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search by stock name or symbol..." />
+          </div>
+
+          <div class="filter-box">
+            <select id="sectorFilter">
+              <option value="all">All Sectors</option>
+              <option value="IT">IT</option>
+              <option value="Banking">Banking</option>
+              <option value="Energy">Energy</option>
+              <option value="Finance">Finance</option>
+            </select>
+          </div>
+
+          <div class="filter-box">
+            <select id="sortFilter">
+              <option value="default">Sort By</option>
+              <option value="high">Price: High to Low</option>
+              <option value="low">Price: Low to High</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Market Highlights</h2>
+            <p>Quick insights before you trade.</p>
+          </div>
+        </div>
+
+        <div class="highlights-list">
+          <div class="highlight-card">
+            <h4>Top Gainer</h4>
+            <p>TCS is showing stronger upward movement in the current simulation.</p>
+            <span class="positive">+1.8%</span>
+          </div>
+
+          <div class="highlight-card">
+            <h4>Most Watched</h4>
+            <p>Reliance continues to remain in focus for large-cap watchlists.</p>
+            <span class="positive">High Interest</span>
+          </div>
+
+          <div class="highlight-card">
+            <h4>Sector Focus</h4>
+            <p>IT sector is showing better sentiment than banking in this view.</p>
+            <span class="positive">Bullish Outlook</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stocks-panel">
+      <div class="panel-header">
+        <div>
+          <h2>Premium Market Listings</h2>
+          <p>Cards below are dynamic-ready and will later connect to backend APIs.</p>
+        </div>
+      </div>
+
+      <div class="stocks-grid" id="stocksGrid"></div>
+    </section>
+  </div>
+
+  <script>
+    const stocks = [
+      {
+        symbol: "TCS",
+        company: "Tata Consultancy Services",
+        price: 3950,
+        change: "+1.8%",
+        sector: "IT",
+        volume: "1.2M"
+      },
+      {
+        symbol: "INFY",
+        company: "Infosys",
+        price: 1450,
+        change: "+0.9%",
+        sector: "IT",
+        volume: "980K"
+      },
+      {
+        symbol: "HDFCBANK",
+        company: "HDFC Bank",
+        price: 1580,
+        change: "+1.2%",
+        sector: "Banking",
+        volume: "870K"
+      },
+      {
+        symbol: "RELIANCE",
+        company: "Reliance Industries",
+        price: 2800,
+        change: "-0.4%",
+        sector: "Energy",
+        volume: "1.5M"
+      },
+      {
+        symbol: "ICICIBANK",
+        company: "ICICI Bank",
+        price: 1215,
+        change: "+0.6%",
+        sector: "Finance",
+        volume: "760K"
+      },
+      {
+        symbol: "WIPRO",
+        company: "Wipro",
+        price: 540,
+        change: "-0.2%",
+        sector: "IT",
+        volume: "640K"
+      }
+    ];
+
+    const stocksGrid = document.getElementById("stocksGrid");
+    const searchInput = document.getElementById("searchInput");
+    const sectorFilter = document.getElementById("sectorFilter");
+    const sortFilter = document.getElementById("sortFilter");
+
+    function renderStocks() {
+      let filteredStocks = [...stocks];
+
+      const searchValue = searchInput.value.toLowerCase().trim();
+      const selectedSector = sectorFilter.value;
+      const selectedSort = sortFilter.value;
+
+      if (searchValue) {
+        filteredStocks = filteredStocks.filter(stock =>
+          stock.symbol.toLowerCase().includes(searchValue) ||
+          stock.company.toLowerCase().includes(searchValue)
+        );
+      }
+
+      if (selectedSector !== "all") {
+        filteredStocks = filteredStocks.filter(stock => stock.sector === selectedSector);
+      }
+
+      if (selectedSort === "high") {
+        filteredStocks.sort((a, b) => b.price - a.price);
+      } else if (selectedSort === "low") {
+        filteredStocks.sort((a, b) => a.price - b.price);
+      }
+
+      if (filteredStocks.length === 0) {
+        stocksGrid.innerHTML = "<p>No matching stocks found.</p>";
+        return;
+      }
+
+      stocksGrid.innerHTML = filteredStocks.map(stock => `
+        <div class="stock-card">
+          <div class="stock-top">
+            <div>
+              <h3>${stock.symbol}</h3>
+              <p>${stock.company}</p>
+            </div>
+            <div class="stock-price">
+              <div class="price">₹${stock.price}</div>
+              <div class="${stock.change.startsWith('+') ? 'positive' : 'negative'}">${stock.change}</div>
+            </div>
+          </div>
+
+          <div class="stock-meta">
+            <span>Sector: ${stock.sector}</span>
+            <span>Volume: ${stock.volume}</span>
+          </div>
+
+          <div class="stock-actions">
+            <button class="action-btn buy-btn" onclick="buyStock('${stock.symbol}')">Buy</button>
+            <button class="action-btn sell-btn" onclick="sellStock('${stock.symbol}')">Sell</button>
+            <button class="action-btn watch-btn" onclick="addToWatchlist('${stock.symbol}')">Watchlist</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function buyStock(symbol) {
+      alert(`Buy action clicked for ${symbol}. This will later connect to backend.`);
+    }
+
+    function sellStock(symbol) {
+      alert(`Sell action clicked for ${symbol}. This will later connect to backend.`);
+    }
+
+    function addToWatchlist(symbol) {
+      alert(`${symbol} added to watchlist. This will later connect to backend.`);
+    }
+
+    searchInput.addEventListener("input", renderStocks);
+    sectorFilter.addEventListener("change", renderStocks);
+    sortFilter.addEventListener("change", renderStocks);
+
+    renderStocks();
+  </script>
+</body>
+</html>
