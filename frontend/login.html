@@ -331,28 +331,37 @@
   </div>
 
   <script>
-    const loginForm = document.getElementById("loginForm");
-    const message = document.getElementById("message");
+  const loginForm = document.getElementById("loginForm");
+  const message = document.getElementById("message");
 
-    loginForm.addEventListener("submit", function (e) {
-      e.preventDefault();
+  loginForm.addEventListener("submit", function (e) {
+    e.preventDefault();
 
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
 
-      if (!email || !password) {
-        message.textContent = "Please fill in all fields.";
-        message.style.color = "#facc15";
-        return;
-      }
+    if (!email || !password) {
+      message.textContent = "Please fill in all fields.";
+      message.style.color = "#facc15";
+      return;
+    }
 
-      message.textContent = "Login successful! Redirecting...";
-      message.style.color = "#22c55e";
+    const savedName = localStorage.getItem("tradewiseRegisteredName");
+    const savedEmail = localStorage.getItem("tradewiseRegisteredEmail");
 
-      setTimeout(() => {
-        window.location.href = "dashboard.html";
-      }, 1000);
-    });
-  </script>
+    if (savedEmail && email === savedEmail) {
+      localStorage.setItem("tradewiseCurrentUser", savedName);
+    } else {
+      localStorage.setItem("tradewiseCurrentUser", "Trader");
+    }
+
+    message.textContent = "Login successful! Redirecting...";
+    message.style.color = "#22c55e";
+
+    setTimeout(() => {
+      window.location.href = "dashboard.html";
+    }, 1000);
+  });
+</script>
 </body>
 </html>

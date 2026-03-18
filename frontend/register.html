@@ -290,36 +290,39 @@
   </div>
 
   <script>
-    const registerForm = document.getElementById("registerForm");
-    const message = document.getElementById("message");
+  const registerForm = document.getElementById("registerForm");
+  const message = document.getElementById("message");
 
-    registerForm.addEventListener("submit", function (e) {
-      e.preventDefault();
+  registerForm.addEventListener("submit", function (e) {
+    e.preventDefault();
 
-      const name = document.getElementById("name").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const confirmPassword = document.getElementById("confirmPassword").value.trim();
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const confirmPassword = document.getElementById("confirmPassword").value.trim();
 
-      if (!name || !email || !password || !confirmPassword) {
-        message.textContent = "Please fill in all fields.";
-        message.style.color = "#facc15";
-        return;
-      }
+    if (!name || !email || !password || !confirmPassword) {
+      message.textContent = "Please fill in all fields.";
+      message.style.color = "#facc15";
+      return;
+    }
 
-      if (password !== confirmPassword) {
-        message.textContent = "Passwords do not match.";
-        message.style.color = "#f87171";
-        return;
-      }
+    if (password !== confirmPassword) {
+      message.textContent = "Passwords do not match.";
+      message.style.color = "#f87171";
+      return;
+    }
 
-      message.textContent = "Account created successfully! Redirecting...";
-      message.style.color = "#22c55e";
+    localStorage.setItem("tradewiseRegisteredName", name);
+    localStorage.setItem("tradewiseRegisteredEmail", email);
 
-      setTimeout(() => {
-        window.location.href = "login.html";
-      }, 1000);
-    });
-  </script>
+    message.textContent = "Account created successfully! Redirecting...";
+    message.style.color = "#22c55e";
+
+    setTimeout(() => {
+      window.location.href = "login.html";
+    }, 1000);
+  });
+</script>
 </body>
 </html>
