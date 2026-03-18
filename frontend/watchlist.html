@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TradeWise | Watchlist</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      color: white;
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.08), transparent 18%),
+        radial-gradient(circle at top right, rgba(250, 204, 21, 0.07), transparent 16%),
+        linear-gradient(180deg, #040b16, #07111f 42%, #0b1220 100%);
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 22px 36px;
+      background: rgba(4, 11, 22, 0.75);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .logo {
+      font-size: 32px;
+      font-weight: bold;
+      color: #38bdf8;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #dbeafe;
+      font-size: 15px;
+      transition: 0.3s ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: #38bdf8;
+    }
+
+    .container {
+      padding: 30px 36px 50px;
+    }
+
+    .watchlist-hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: 30px;
+      min-height: 290px;
+      margin-bottom: 24px;
+      background:
+        linear-gradient(rgba(4, 11, 22, 0.42), rgba(4, 11, 22, 0.78)),
+        url("./assets/images/market-bg.jpg") center/cover no-repeat;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 28px 70px rgba(0, 0, 0, 0.32);
+      display: flex;
+      align-items: center;
+      padding: 34px;
+    }
+
+    .watchlist-hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 22%),
+        radial-gradient(circle at bottom right, rgba(250, 204, 21, 0.12), transparent 24%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 760px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.13);
+      border: 1px solid rgba(56, 189, 248, 0.32);
+      color: #7dd3fc;
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
+
+    .hero-content h1 {
+      font-size: 46px;
+      line-height: 1.12;
+      margin-bottom: 14px;
+      text-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+    }
+
+    .hero-content p {
+      max-width: 700px;
+      color: #e2e8f0;
+      font-size: 17px;
+      line-height: 1.8;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .summary-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 24px;
+      padding: 22px;
+      background: linear-gradient(135deg, rgba(13, 22, 38, 0.98), rgba(7, 14, 27, 0.98));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24);
+    }
+
+    .summary-card::after {
+      content: "";
+      position: absolute;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      right: -30px;
+      top: -30px;
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    .summary-card .label {
+      position: relative;
+      z-index: 1;
+      color: #94a3b8;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .summary-card h2 {
+      position: relative;
+      z-index: 1;
+      font-size: 32px;
+      margin-bottom: 8px;
+      color: #ffffff;
+    }
+
+    .summary-card .sub {
+      position: relative;
+      z-index: 1;
+      font-size: 14px;
+      color: #cbd5e1;
+    }
+
+    .positive {
+      color: #22c55e;
+      font-weight: bold;
+    }
+
+    .negative {
+      color: #f87171;
+      font-weight: bold;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 0.9fr;
+      gap: 22px;
+    }
+
+    .panel {
+      border-radius: 28px;
+      padding: 24px;
+      background: linear-gradient(135deg, rgba(13, 22, 38, 0.98), rgba(7, 14, 27, 0.98));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .panel-header h2 {
+      font-size: 28px;
+      color: #f8fafc;
+    }
+
+    .panel-header p {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
+    .watch-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .watch-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 22px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: 0.3s ease;
+    }
+
+    .watch-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(56, 189, 248, 0.35);
+    }
+
+    .watch-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .watch-top h3 {
+      font-size: 22px;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+
+    .watch-top p {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
+    .watch-price {
+      text-align: right;
+    }
+
+    .watch-price .price {
+      font-size: 24px;
+      font-weight: bold;
+      color: #38bdf8;
+      margin-bottom: 4px;
+    }
+
+    .watch-meta {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .meta-box {
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .meta-label {
+      color: #94a3b8;
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .meta-value {
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .watch-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      flex: 1;
+      min-width: 110px;
+      border: none;
+      border-radius: 14px;
+      padding: 13px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      transition: 0.3s ease;
+    }
+
+    .buy-btn {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: white;
+    }
+
+    .remove-btn {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+    }
+
+    .details-btn {
+      background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+      color: #081120;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .insight-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .insight-card {
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .insight-card h4 {
+      font-size: 18px;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .insight-card p {
+      color: #cbd5e1;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 1150px) {
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .watch-meta {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 18px 20px;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .container {
+        padding: 22px 18px 40px;
+      }
+
+      .watchlist-hero,
+      .panel {
+        padding: 20px;
+      }
+
+      .hero-content h1 {
+        font-size: 34px;
+      }
+
+      .panel-header h2 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">TradeWise</div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="market.html">Market</a>
+      <a href="portfolio.html">Portfolio</a>
+      <a href="watchlist.html" class="active">Watchlist</a>
+      <a href="transactions.html">Transactions</a>
+      <a href="login.html">Logout</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <section class="watchlist-hero">
+      <div class="hero-content">
+        <div class="badge">Smart Watch Tracking</div>
+        <h1>Keep Your Favorite Stocks in Focus</h1>
+        <p>
+          Save promising stocks, monitor price changes, compare momentum,
+          and decide the right time to buy through a premium watchlist experience.
+        </p>
+      </div>
+    </section>
+
+    <section class="summary-grid">
+      <div class="summary-card">
+        <div class="label">Saved Stocks</div>
+        <h2>04</h2>
+        <div class="sub">Currently under active watch</div>
+      </div>
+
+      <div class="summary-card">
+        <div class="label">Top Watch Movement</div>
+        <h2>+1.8%</h2>
+        <div class="sub positive">TCS leading watchlist growth</div>
+      </div>
+
+      <div class="summary-card">
+        <div class="label">Best Sector Watch</div>
+        <h2>IT</h2>
+        <div class="sub">Most monitored segment right now</div>
+      </div>
+    </section>
+
+    <section class="main-grid">
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Your Watchlist</h2>
+            <p>Dynamic-ready saved stock cards for backend-connected watch tracking.</p>
+          </div>
+        </div>
+
+        <div class="watch-cards" id="watchCards"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Quick Insights</h2>
+            <p>Helpful watch observations before you take action.</p>
+          </div>
+        </div>
+
+        <div class="insight-list">
+          <div class="insight-card">
+            <h4>Top Candidate</h4>
+            <p>TCS is showing stable upward movement and remains the strongest stock in your watchlist.</p>
+            <span class="positive">Bullish Signal</span>
+          </div>
+
+          <div class="insight-card">
+            <h4>Potential Dip Buy</h4>
+            <p>Reliance is slightly down, which may create a possible buy-on-dip opportunity later.</p>
+            <span class="negative">Watch Carefully</span>
+          </div>
+
+          <div class="insight-card">
+            <h4>Sector Preference</h4>
+            <p>Your watchlist is currently inclined more toward IT and diversified large-cap names.</p>
+            <span class="positive">Growth Focused</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const watchlistStocks = [
+      {
+        symbol: "TCS",
+        company: "Tata Consultancy Services",
+        price: 3950,
+        change: "+1.8%",
+        sector: "IT",
+        note: "Stable uptrend with consistent IT momentum."
+      },
+      {
+        symbol: "INFY",
+        company: "Infosys",
+        price: 1450,
+        change: "+0.9%",
+        sector: "IT",
+        note: "Strong tech candidate for medium-term watch."
+      },
+      {
+        symbol: "RELIANCE",
+        company: "Reliance Industries",
+        price: 2800,
+        change: "-0.4%",
+        sector: "Energy",
+        note: "Large-cap diversified stock under close observation."
+      },
+      {
+        symbol: "HDFCBANK",
+        company: "HDFC Bank",
+        price: 1580,
+        change: "+1.2%",
+        sector: "Banking",
+        note: "Strong private banking stock with upward strength."
+      }
+    ];
+
+    const watchCards = document.getElementById("watchCards");
+
+    function renderWatchlist() {
+      watchCards.innerHTML = watchlistStocks.map(stock => `
+        <div class="watch-card">
+          <div class="watch-top">
+            <div>
+              <h3>${stock.symbol}</h3>
+              <p>${stock.company}</p>
+            </div>
+            <div class="watch-price">
+              <div class="price">₹${stock.price}</div>
+              <div class="${stock.change.startsWith('+') ? 'positive' : 'negative'}">${stock.change}</div>
+            </div>
+          </div>
+
+          <div class="watch-meta">
+            <div class="meta-box">
+              <div class="meta-label">Sector</div>
+              <div class="meta-value">${stock.sector}</div>
+            </div>
+            <div class="meta-box">
+              <div class="meta-label">Movement</div>
+              <div class="meta-value ${stock.change.startsWith('+') ? 'positive' : 'negative'}">${stock.change}</div>
+            </div>
+            <div class="meta-box">
+              <div class="meta-label">Watch Note</div>
+              <div class="meta-value">Active</div>
+            </div>
+          </div>
+
+          <p style="color:#cbd5e1; font-size:14px; line-height:1.6; margin-bottom:16px;">
+            ${stock.note}
+          </p>
+
+          <div class="watch-actions">
+            <button class="action-btn buy-btn" onclick="buyNow('${stock.symbol}')">Buy Now</button>
+            <button class="action-btn remove-btn" onclick="removeFromWatchlist('${stock.symbol}')">Remove</button>
+            <button class="action-btn details-btn" onclick="viewStockDetails('${stock.symbol}')">Details</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function buyNow(symbol) {
+      alert(`Buy now clicked for ${symbol}. This will later connect to backend.`);
+    }
+
+    function removeFromWatchlist(symbol) {
+      alert(`Remove clicked for ${symbol}. This will later connect to backend.`);
+    }
+
+    function viewStockDetails(symbol) {
+      alert(`Details clicked for ${symbol}. This will later connect to backend.`);
+    }
+
+    renderWatchlist();
+  </script>
+</body>
+</html>
