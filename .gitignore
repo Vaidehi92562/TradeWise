@@ -1,0 +1,24 @@
+# OS files
+.DS_Store
+
+# Logs
+*.log
+
+# Environment files
+.env
+
+# Node modules
+node_modules/
+
+# Java / Maven
+target/
+*.class
+*.jar
+*.war
+
+# IDE files
+.idea/
+.vscode/
+
+# Mac / misc
+Thumbs.db
