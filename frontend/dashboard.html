@@ -472,7 +472,7 @@
       <a href="portfolio.html">Portfolio</a>
       <a href="watchlist.html">Watchlist</a>
       <a href="transactions.html">Transactions</a>
-      <a href="login.html">Logout</a>
+      <a href="#" onclick="logoutUser()">Logout</a>
     </div>
   </nav>
 
@@ -537,11 +537,11 @@
     </section>
 
     <section class="stats-grid">
-      <div class="stat-card">
-        <div class="label">Available Balance</div>
-        <h2>₹1,00,000</h2>
-        <div class="trend">+ Ready to invest</div>
-      </div>
+     <div class="stat-card">
+  <div class="label">Available Balance</div>
+  <h2 id="userBalance">₹1,00,000</h2>
+  <div class="trend">+ Ready to invest</div>
+</div>
 
       <div class="stat-card">
         <div class="label">Portfolio Value</div>
@@ -661,17 +661,36 @@
     </section>
   </div>
 
-  <script>
-    function goToPage(page) {
-      window.location.href = page;
-    }
+<script>
+  function goToPage(page) {
+    window.location.href = page;
+  }
 
-    const storedUser = localStorage.getItem("tradewiseCurrentUser");
-    const userNameElement = document.getElementById("userName");
+  function logoutUser() {
+    localStorage.removeItem("tradewiseCurrentUser");
+    localStorage.removeItem("tradewiseCurrentUserEmail");
+    localStorage.removeItem("tradewiseCurrentUserBalance");
+    window.location.href = "login.html";
+  }
 
-    if (storedUser && userNameElement) {
-      userNameElement.textContent = storedUser;
-    }
-  </script>
+  const storedUser = localStorage.getItem("tradewiseCurrentUser");
+  const storedBalance = localStorage.getItem("tradewiseCurrentUserBalance");
+
+  if (!storedUser) {
+    window.location.href = "login.html";
+  }
+
+  const userNameElement = document.getElementById("userName");
+  const userBalanceElement = document.getElementById("userBalance");
+
+  if (storedUser && userNameElement) {
+    userNameElement.textContent = storedUser;
+  }
+
+  if (storedBalance && userBalanceElement) {
+    const formattedBalance = Number(storedBalance).toLocaleString("en-IN");
+    userBalanceElement.textContent = `₹${formattedBalance}`;
+  }
+</script>
 </body>
 </html>

@@ -293,7 +293,7 @@
   const registerForm = document.getElementById("registerForm");
   const message = document.getElementById("message");
 
-  registerForm.addEventListener("submit", function (e) {
+  registerForm.addEventListener("submit", async function (e) {
     e.preventDefault();
 
     const name = document.getElementById("name").value.trim();
@@ -313,15 +313,42 @@
       return;
     }
 
-    localStorage.setItem("tradewiseRegisteredName", name);
-    localStorage.setItem("tradewiseRegisteredEmail", email);
+    message.textContent = "Creating account...";
+    message.style.color = "#38bdf8";
 
-    message.textContent = "Account created successfully! Redirecting...";
-    message.style.color = "#22c55e";
+    try {
+      const response = await fetch("http://localhost:8080/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          fullName: name,
+          email: email,
+          password: password
+        })
+      });
 
-    setTimeout(() => {
-      window.location.href = "login.html";
-    }, 1000);
+      if (!response.ok) {
+        throw new Error("Registration failed. Email may already exist.");
+      }
+
+      const user = await response.json();
+
+      localStorage.setItem("tradewiseCurrentUser", user.fullName);
+      localStorage.setItem("tradewiseCurrentUserEmail", user.email);
+      localStorage.setItem("tradewiseCurrentUserBalance", user.balance);
+
+      message.textContent = "Account created successfully! Redirecting to login...";
+      message.style.color = "#22c55e";
+
+      setTimeout(() => {
+        window.location.href = "login.html";
+      }, 1000);
+    } catch (error) {
+      message.textContent = error.message || "Something went wrong.";
+      message.style.color = "#ef4444";
+    }
   });
 </script>
 </body>

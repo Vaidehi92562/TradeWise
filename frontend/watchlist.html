@@ -405,7 +405,7 @@
       <a href="portfolio.html">Portfolio</a>
       <a href="watchlist.html" class="active">Watchlist</a>
       <a href="transactions.html">Transactions</a>
-      <a href="login.html">Logout</a>
+      <a href="#" onclick="logoutUser()">Logout</a>
     </div>
   </nav>
 
@@ -484,99 +484,112 @@
     </section>
   </div>
 
-  <script>
-    const watchlistStocks = [
-      {
-        symbol: "TCS",
-        company: "Tata Consultancy Services",
-        price: 3950,
-        change: "+1.8%",
-        sector: "IT",
-        note: "Stable uptrend with consistent IT momentum."
-      },
-      {
-        symbol: "INFY",
-        company: "Infosys",
-        price: 1450,
-        change: "+0.9%",
-        sector: "IT",
-        note: "Strong tech candidate for medium-term watch."
-      },
-      {
-        symbol: "RELIANCE",
-        company: "Reliance Industries",
-        price: 2800,
-        change: "-0.4%",
-        sector: "Energy",
-        note: "Large-cap diversified stock under close observation."
-      },
-      {
-        symbol: "HDFCBANK",
-        company: "HDFC Bank",
-        price: 1580,
-        change: "+1.2%",
-        sector: "Banking",
-        note: "Strong private banking stock with upward strength."
-      }
-    ];
+ <script>
+  const storedUser = localStorage.getItem("tradewiseCurrentUser");
 
-    const watchCards = document.getElementById("watchCards");
+  if (!storedUser) {
+    window.location.href = "login.html";
+  }
 
-    function renderWatchlist() {
-      watchCards.innerHTML = watchlistStocks.map(stock => `
-        <div class="watch-card">
-          <div class="watch-top">
-            <div>
-              <h3>${stock.symbol}</h3>
-              <p>${stock.company}</p>
-            </div>
-            <div class="watch-price">
-              <div class="price">₹${stock.price}</div>
-              <div class="${stock.change.startsWith('+') ? 'positive' : 'negative'}">${stock.change}</div>
-            </div>
+  function logoutUser() {
+    localStorage.removeItem("tradewiseCurrentUser");
+    localStorage.removeItem("tradewiseCurrentUserEmail");
+    localStorage.removeItem("tradewiseCurrentUserBalance");
+    window.location.href = "login.html";
+  }
+
+  const watchlistStocks = [
+    {
+      symbol: "TCS",
+      company: "Tata Consultancy Services",
+      price: 3950,
+      change: "+1.8%",
+      sector: "IT",
+      note: "Stable uptrend with consistent IT momentum."
+    },
+    {
+      symbol: "INFY",
+      company: "Infosys",
+      price: 1450,
+      change: "+0.9%",
+      sector: "IT",
+      note: "Strong tech candidate for medium-term watch."
+    },
+    {
+      symbol: "RELIANCE",
+      company: "Reliance Industries",
+      price: 2800,
+      change: "-0.4%",
+      sector: "Energy",
+      note: "Large-cap diversified stock under close observation."
+    },
+    {
+      symbol: "HDFCBANK",
+      company: "HDFC Bank",
+      price: 1580,
+      change: "+1.2%",
+      sector: "Banking",
+      note: "Strong private banking stock with upward strength."
+    }
+  ];
+
+  const watchCards = document.getElementById("watchCards");
+
+  function renderWatchlist() {
+    watchCards.innerHTML = watchlistStocks.map(stock => `
+      <div class="watch-card">
+        <div class="watch-top">
+          <div>
+            <h3>${stock.symbol}</h3>
+            <p>${stock.company}</p>
           </div>
-
-          <div class="watch-meta">
-            <div class="meta-box">
-              <div class="meta-label">Sector</div>
-              <div class="meta-value">${stock.sector}</div>
-            </div>
-            <div class="meta-box">
-              <div class="meta-label">Movement</div>
-              <div class="meta-value ${stock.change.startsWith('+') ? 'positive' : 'negative'}">${stock.change}</div>
-            </div>
-            <div class="meta-box">
-              <div class="meta-label">Watch Note</div>
-              <div class="meta-value">Active</div>
-            </div>
-          </div>
-
-          <p style="color:#cbd5e1; font-size:14px; line-height:1.6; margin-bottom:16px;">
-            ${stock.note}
-          </p>
-
-          <div class="watch-actions">
-            <button class="action-btn buy-btn" onclick="buyNow('${stock.symbol}')">Buy Now</button>
-            <button class="action-btn remove-btn" onclick="removeFromWatchlist('${stock.symbol}')">Remove</button>
-            <button class="action-btn details-btn" onclick="viewStockDetails('${stock.symbol}')">Details</button>
+          <div class="watch-price">
+            <div class="price">₹${stock.price}</div>
+            <div class="${stock.change.startsWith('+') ? 'positive' : 'negative'}">${stock.change}</div>
           </div>
         </div>
-      `).join("");
-    }
 
-    function buyNow(symbol) {
-      alert(`Buy now clicked for ${symbol}. This will later connect to backend.`);
-    }
+        <div class="watch-meta">
+          <div class="meta-box">
+            <div class="meta-label">Sector</div>
+            <div class="meta-value">${stock.sector}</div>
+          </div>
+          <div class="meta-box">
+            <div class="meta-label">Movement</div>
+            <div class="meta-value ${stock.change.startsWith('+') ? 'positive' : 'negative'}">${stock.change}</div>
+          </div>
+          <div class="meta-box">
+            <div class="meta-label">Watch Note</div>
+            <div class="meta-value">Active</div>
+          </div>
+        </div>
 
-    function removeFromWatchlist(symbol) {
-      alert(`Remove clicked for ${symbol}. This will later connect to backend.`);
-    }
+        <p style="color:#cbd5e1; font-size:14px; line-height:1.6; margin-bottom:16px;">
+          ${stock.note}
+        </p>
 
-    function viewStockDetails(symbol) {
-      alert(`Details clicked for ${symbol}. This will later connect to backend.`);
-    }
+        <div class="watch-actions">
+          <button class="action-btn buy-btn" onclick="buyNow('${stock.symbol}')">Buy Now</button>
+          <button class="action-btn remove-btn" onclick="removeFromWatchlist('${stock.symbol}')">Remove</button>
+          <button class="action-btn details-btn" onclick="viewStockDetails('${stock.symbol}')">Details</button>
+        </div>
+      </div>
+    `).join("");
+  }
 
-    renderWatchlist();
-  </script>
+  function buyNow(symbol) {
+    alert(`Buy now clicked for ${symbol}. This will later connect to backend.`);
+  }
+
+  function removeFromWatchlist(symbol) {
+    alert(`Remove clicked for ${symbol}. This will later connect to backend.`);
+  }
+
+  function viewStockDetails(symbol) {
+    alert(`Details clicked for ${symbol}. This will later connect to backend.`);
+  }
+
+  renderWatchlist();
+</script>
 </body>
 </html>

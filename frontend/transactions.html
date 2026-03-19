@@ -334,7 +334,7 @@
       <a href="portfolio.html">Portfolio</a>
       <a href="watchlist.html">Watchlist</a>
       <a href="transactions.html" class="active">Transactions</a>
-      <a href="login.html">Logout</a>
+      <a href="#" onclick="logoutUser()">Logout</a>
     </div>
   </nav>
 
@@ -425,69 +425,82 @@
   </div>
 
   <script>
-    const transactions = [
-      { date: "2026-03-18 10:30", symbol: "TCS", company: "Tata Consultancy Services", type: "BUY", quantity: 10, price: 3950, status: "Completed" },
-      { date: "2026-03-17 15:10", symbol: "INFY", company: "Infosys", type: "SELL", quantity: 5, price: 1450, status: "Completed" },
-      { date: "2026-03-16 12:20", symbol: "HDFCBANK", company: "HDFC Bank", type: "BUY", quantity: 12, price: 1580, status: "Completed" },
-      { date: "2026-03-15 11:40", symbol: "RELIANCE", company: "Reliance Industries", type: "BUY", quantity: 6, price: 2800, status: "Completed" },
-      { date: "2026-03-14 14:05", symbol: "ICICIBANK", company: "ICICI Bank", type: "SELL", quantity: 4, price: 1215, status: "Completed" },
-      { date: "2026-03-13 09:55", symbol: "WIPRO", company: "Wipro", type: "BUY", quantity: 15, price: 540, status: "Completed" }
-    ];
+  const storedUser = localStorage.getItem("tradewiseCurrentUser");
 
-    const transactionsBody = document.getElementById("transactionsBody");
-    const searchInput = document.getElementById("searchInput");
-    const typeFilter = document.getElementById("typeFilter");
-    const sortFilter = document.getElementById("sortFilter");
+  if (!storedUser) {
+    window.location.href = "login.html";
+  }
 
-    function renderTransactions() {
-      let filtered = [...transactions];
-      const searchValue = searchInput.value.toLowerCase().trim();
-      const selectedType = typeFilter.value;
-      const selectedSort = sortFilter.value;
+  function logoutUser() {
+    localStorage.removeItem("tradewiseCurrentUser");
+    localStorage.removeItem("tradewiseCurrentUserEmail");
+    localStorage.removeItem("tradewiseCurrentUserBalance");
+    window.location.href = "login.html";
+  }
 
-      if (searchValue) {
-        filtered = filtered.filter(tx =>
-          tx.symbol.toLowerCase().includes(searchValue) ||
-          tx.company.toLowerCase().includes(searchValue)
-        );
-      }
+  const transactions = [
+    { date: "2026-03-18 10:30", symbol: "TCS", company: "Tata Consultancy Services", type: "BUY", quantity: 10, price: 3950, status: "Completed" },
+    { date: "2026-03-17 15:10", symbol: "INFY", company: "Infosys", type: "SELL", quantity: 5, price: 1450, status: "Completed" },
+    { date: "2026-03-16 12:20", symbol: "HDFCBANK", company: "HDFC Bank", type: "BUY", quantity: 12, price: 1580, status: "Completed" },
+    { date: "2026-03-15 11:40", symbol: "RELIANCE", company: "Reliance Industries", type: "BUY", quantity: 6, price: 2800, status: "Completed" },
+    { date: "2026-03-14 14:05", symbol: "ICICIBANK", company: "ICICI Bank", type: "SELL", quantity: 4, price: 1215, status: "Completed" },
+    { date: "2026-03-13 09:55", symbol: "WIPRO", company: "Wipro", type: "BUY", quantity: 15, price: 540, status: "Completed" }
+  ];
 
-      if (selectedType !== "all") {
-        filtered = filtered.filter(tx => tx.type === selectedType);
-      }
+  const transactionsBody = document.getElementById("transactionsBody");
+  const searchInput = document.getElementById("searchInput");
+  const typeFilter = document.getElementById("typeFilter");
+  const sortFilter = document.getElementById("sortFilter");
 
-      if (selectedSort === "latest") {
-        filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
-      } else {
-        filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
-      }
+  function renderTransactions() {
+    let filtered = [...transactions];
+    const searchValue = searchInput.value.toLowerCase().trim();
+    const selectedType = typeFilter.value;
+    const selectedSort = sortFilter.value;
 
-      transactionsBody.innerHTML = filtered.map(tx => {
-        const total = tx.quantity * tx.price;
-        return `
-          <tr>
-            <td>${tx.date}</td>
-            <td>
-              <strong>${tx.symbol}</strong><br>
-              <span style="color:#94a3b8; font-size:12px;">${tx.company}</span>
-            </td>
-            <td>
-              <span class="type-badge ${tx.type === 'BUY' ? 'buy-badge' : 'sell-badge'}">${tx.type}</span>
-            </td>
-            <td>${tx.quantity}</td>
-            <td>₹${tx.price.toLocaleString()}</td>
-            <td>₹${total.toLocaleString()}</td>
-            <td style="color:#cbd5e1;">${tx.status}</td>
-          </tr>
-        `;
-      }).join("");
+    if (searchValue) {
+      filtered = filtered.filter(tx =>
+        tx.symbol.toLowerCase().includes(searchValue) ||
+        tx.company.toLowerCase().includes(searchValue)
+      );
     }
 
-    searchInput.addEventListener("input", renderTransactions);
-    typeFilter.addEventListener("change", renderTransactions);
-    sortFilter.addEventListener("change", renderTransactions);
+    if (selectedType !== "all") {
+      filtered = filtered.filter(tx => tx.type === selectedType);
+    }
 
-    renderTransactions();
-  </script>
+    if (selectedSort === "latest") {
+      filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+    } else {
+      filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
+    }
+
+    transactionsBody.innerHTML = filtered.map(tx => {
+      const total = tx.quantity * tx.price;
+      return `
+        <tr>
+          <td>${tx.date}</td>
+          <td>
+            <strong>${tx.symbol}</strong><br>
+            <span style="color:#94a3b8; font-size:12px;">${tx.company}</span>
+          </td>
+          <td>
+            <span class="type-badge ${tx.type === 'BUY' ? 'buy-badge' : 'sell-badge'}">${tx.type}</span>
+          </td>
+          <td>${tx.quantity}</td>
+          <td>₹${tx.price.toLocaleString()}</td>
+          <td>₹${total.toLocaleString()}</td>
+          <td style="color:#cbd5e1;">${tx.status}</td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  searchInput.addEventListener("input", renderTransactions);
+  typeFilter.addEventListener("change", renderTransactions);
+  sortFilter.addEventListener("change", renderTransactions);
+
+  renderTransactions();
+</script>
 </body>
 </html>

@@ -437,7 +437,7 @@
       <a href="portfolio.html" class="active">Portfolio</a>
       <a href="watchlist.html">Watchlist</a>
       <a href="transactions.html">Transactions</a>
-      <a href="login.html">Logout</a>
+      <a href="#" onclick="logoutUser()">Logout</a>
     </div>
   </nav>
 
@@ -541,105 +541,118 @@
   </div>
 
   <script>
-    const holdings = [
-      {
-        symbol: "TCS",
-        company: "Tata Consultancy Services",
-        quantity: 10,
-        avgPrice: 3600,
-        currentPrice: 3950,
-        sector: "IT"
-      },
-      {
-        symbol: "HDFCBANK",
-        company: "HDFC Bank",
-        quantity: 12,
-        avgPrice: 1490,
-        currentPrice: 1580,
-        sector: "Banking"
-      },
-      {
-        symbol: "RELIANCE",
-        company: "Reliance Industries",
-        quantity: 6,
-        avgPrice: 2700,
-        currentPrice: 2800,
-        sector: "Energy"
-      },
-      {
-        symbol: "INFY",
-        company: "Infosys",
-        quantity: 8,
-        avgPrice: 1380,
-        currentPrice: 1450,
-        sector: "IT"
-      }
-    ];
+  const storedUser = localStorage.getItem("tradewiseCurrentUser");
 
-    const holdingsList = document.getElementById("holdingsList");
+  if (!storedUser) {
+    window.location.href = "login.html";
+  }
 
-    function renderHoldings() {
-      holdingsList.innerHTML = holdings.map(stock => {
-        const invested = stock.quantity * stock.avgPrice;
-        const currentValue = stock.quantity * stock.currentPrice;
-        const pnl = currentValue - invested;
-        const pnlClass = pnl >= 0 ? "positive" : "negative";
+  function logoutUser() {
+    localStorage.removeItem("tradewiseCurrentUser");
+    localStorage.removeItem("tradewiseCurrentUserEmail");
+    localStorage.removeItem("tradewiseCurrentUserBalance");
+    window.location.href = "login.html";
+  }
 
-        return `
-          <div class="holding-card">
-            <div class="holding-top">
-              <div>
-                <h3>${stock.symbol}</h3>
-                <p>${stock.company}</p>
-              </div>
-              <div class="holding-value">
-                <div class="price">₹${currentValue.toLocaleString()}</div>
-                <div class="${pnlClass}">${pnl >= 0 ? "+" : ""}₹${pnl.toLocaleString()}</div>
-              </div>
+  const holdings = [
+    {
+      symbol: "TCS",
+      company: "Tata Consultancy Services",
+      quantity: 10,
+      avgPrice: 3600,
+      currentPrice: 3950,
+      sector: "IT"
+    },
+    {
+      symbol: "HDFCBANK",
+      company: "HDFC Bank",
+      quantity: 12,
+      avgPrice: 1490,
+      currentPrice: 1580,
+      sector: "Banking"
+    },
+    {
+      symbol: "RELIANCE",
+      company: "Reliance Industries",
+      quantity: 6,
+      avgPrice: 2700,
+      currentPrice: 2800,
+      sector: "Energy"
+    },
+    {
+      symbol: "INFY",
+      company: "Infosys",
+      quantity: 8,
+      avgPrice: 1380,
+      currentPrice: 1450,
+      sector: "IT"
+    }
+  ];
+
+  const holdingsList = document.getElementById("holdingsList");
+
+  function renderHoldings() {
+    holdingsList.innerHTML = holdings.map(stock => {
+      const invested = stock.quantity * stock.avgPrice;
+      const currentValue = stock.quantity * stock.currentPrice;
+      const pnl = currentValue - invested;
+      const pnlClass = pnl >= 0 ? "positive" : "negative";
+
+      return `
+        <div class="holding-card">
+          <div class="holding-top">
+            <div>
+              <h3>${stock.symbol}</h3>
+              <p>${stock.company}</p>
             </div>
-
-            <div class="holding-meta">
-              <div class="meta-box">
-                <div class="meta-label">Quantity</div>
-                <div class="meta-value">${stock.quantity}</div>
-              </div>
-              <div class="meta-box">
-                <div class="meta-label">Avg Buy Price</div>
-                <div class="meta-value">₹${stock.avgPrice}</div>
-              </div>
-              <div class="meta-box">
-                <div class="meta-label">Current Price</div>
-                <div class="meta-value">₹${stock.currentPrice}</div>
-              </div>
-              <div class="meta-box">
-                <div class="meta-label">Sector</div>
-                <div class="meta-value">${stock.sector}</div>
-              </div>
-            </div>
-
-            <div class="holding-actions">
-              <button class="action-btn buy-btn" onclick="buyMore('${stock.symbol}')">Buy More</button>
-              <button class="action-btn sell-btn" onclick="sellHolding('${stock.symbol}')">Sell</button>
-              <button class="action-btn details-btn" onclick="viewDetails('${stock.symbol}')">Details</button>
+            <div class="holding-value">
+              <div class="price">₹${currentValue.toLocaleString()}</div>
+              <div class="${pnlClass}">${pnl >= 0 ? "+" : ""}₹${pnl.toLocaleString()}</div>
             </div>
           </div>
-        `;
-      }).join("");
-    }
 
-    function buyMore(symbol) {
-      alert(`Buy more clicked for ${symbol}. This will later connect to backend.`);
-    }
+          <div class="holding-meta">
+            <div class="meta-box">
+              <div class="meta-label">Quantity</div>
+              <div class="meta-value">${stock.quantity}</div>
+            </div>
+            <div class="meta-box">
+              <div class="meta-label">Avg Buy Price</div>
+              <div class="meta-value">₹${stock.avgPrice}</div>
+            </div>
+            <div class="meta-box">
+              <div class="meta-label">Current Price</div>
+              <div class="meta-value">₹${stock.currentPrice}</div>
+            </div>
+            <div class="meta-box">
+              <div class="meta-label">Sector</div>
+              <div class="meta-value">${stock.sector}</div>
+            </div>
+          </div>
 
-    function sellHolding(symbol) {
-      alert(`Sell clicked for ${symbol}. This will later connect to backend.`);
-    }
+          <div class="holding-actions">
+            <button class="action-btn buy-btn" onclick="buyMore('${stock.symbol}')">Buy More</button>
+            <button class="action-btn sell-btn" onclick="sellHolding('${stock.symbol}')">Sell</button>
+            <button class="action-btn details-btn" onclick="viewDetails('${stock.symbol}')">Details</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
 
-    function viewDetails(symbol) {
-      alert(`Details clicked for ${symbol}. This will later connect to backend.`);
-    }
+  function buyMore(symbol) {
+    alert(`Buy more clicked for ${symbol}. This will later connect to backend.`);
+  }
 
-    renderHoldings();
-  </script>
+  function sellHolding(symbol) {
+    alert(`Sell clicked for ${symbol}. This will later connect to backend.`);
+  }
+
+  function viewDetails(symbol) {
+    alert(`Details clicked for ${symbol}. This will later connect to backend.`);
+  }
+
+  renderHoldings();
+</script>
 </body>
 </html>

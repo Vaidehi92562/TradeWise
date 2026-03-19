@@ -485,7 +485,7 @@
       <a href="portfolio.html">Portfolio</a>
       <a href="watchlist.html">Watchlist</a>
       <a href="transactions.html">Transactions</a>
-      <a href="login.html">Logout</a>
+      <a href="#" onclick="logoutUser()">Logout</a>
     </div>
   </nav>
 
@@ -622,135 +622,148 @@
   </div>
 
   <script>
-    const stocks = [
-      {
-        symbol: "TCS",
-        company: "Tata Consultancy Services",
-        price: 3950,
-        change: "+1.8%",
-        sector: "IT",
-        volume: "1.2M"
-      },
-      {
-        symbol: "INFY",
-        company: "Infosys",
-        price: 1450,
-        change: "+0.9%",
-        sector: "IT",
-        volume: "980K"
-      },
-      {
-        symbol: "HDFCBANK",
-        company: "HDFC Bank",
-        price: 1580,
-        change: "+1.2%",
-        sector: "Banking",
-        volume: "870K"
-      },
-      {
-        symbol: "RELIANCE",
-        company: "Reliance Industries",
-        price: 2800,
-        change: "-0.4%",
-        sector: "Energy",
-        volume: "1.5M"
-      },
-      {
-        symbol: "ICICIBANK",
-        company: "ICICI Bank",
-        price: 1215,
-        change: "+0.6%",
-        sector: "Finance",
-        volume: "760K"
-      },
-      {
-        symbol: "WIPRO",
-        company: "Wipro",
-        price: 540,
-        change: "-0.2%",
-        sector: "IT",
-        volume: "640K"
-      }
-    ];
+  const storedUser = localStorage.getItem("tradewiseCurrentUser");
 
-    const stocksGrid = document.getElementById("stocksGrid");
-    const searchInput = document.getElementById("searchInput");
-    const sectorFilter = document.getElementById("sectorFilter");
-    const sortFilter = document.getElementById("sortFilter");
+  if (!storedUser) {
+    window.location.href = "login.html";
+  }
 
-    function renderStocks() {
-      let filteredStocks = [...stocks];
+  function logoutUser() {
+    localStorage.removeItem("tradewiseCurrentUser");
+    localStorage.removeItem("tradewiseCurrentUserEmail");
+    localStorage.removeItem("tradewiseCurrentUserBalance");
+    window.location.href = "login.html";
+  }
 
-      const searchValue = searchInput.value.toLowerCase().trim();
-      const selectedSector = sectorFilter.value;
-      const selectedSort = sortFilter.value;
+  const stocks = [
+    {
+      symbol: "TCS",
+      company: "Tata Consultancy Services",
+      price: 3950,
+      change: "+1.8%",
+      sector: "IT",
+      volume: "1.2M"
+    },
+    {
+      symbol: "INFY",
+      company: "Infosys",
+      price: 1450,
+      change: "+0.9%",
+      sector: "IT",
+      volume: "980K"
+    },
+    {
+      symbol: "HDFCBANK",
+      company: "HDFC Bank",
+      price: 1580,
+      change: "+1.2%",
+      sector: "Banking",
+      volume: "870K"
+    },
+    {
+      symbol: "RELIANCE",
+      company: "Reliance Industries",
+      price: 2800,
+      change: "-0.4%",
+      sector: "Energy",
+      volume: "1.5M"
+    },
+    {
+      symbol: "ICICIBANK",
+      company: "ICICI Bank",
+      price: 1215,
+      change: "+0.6%",
+      sector: "Finance",
+      volume: "760K"
+    },
+    {
+      symbol: "WIPRO",
+      company: "Wipro",
+      price: 540,
+      change: "-0.2%",
+      sector: "IT",
+      volume: "640K"
+    }
+  ];
 
-      if (searchValue) {
-        filteredStocks = filteredStocks.filter(stock =>
-          stock.symbol.toLowerCase().includes(searchValue) ||
-          stock.company.toLowerCase().includes(searchValue)
-        );
-      }
+  const stocksGrid = document.getElementById("stocksGrid");
+  const searchInput = document.getElementById("searchInput");
+  const sectorFilter = document.getElementById("sectorFilter");
+  const sortFilter = document.getElementById("sortFilter");
 
-      if (selectedSector !== "all") {
-        filteredStocks = filteredStocks.filter(stock => stock.sector === selectedSector);
-      }
+  function renderStocks() {
+    let filteredStocks = [...stocks];
 
-      if (selectedSort === "high") {
-        filteredStocks.sort((a, b) => b.price - a.price);
-      } else if (selectedSort === "low") {
-        filteredStocks.sort((a, b) => a.price - b.price);
-      }
+    const searchValue = searchInput.value.toLowerCase().trim();
+    const selectedSector = sectorFilter.value;
+    const selectedSort = sortFilter.value;
 
-      if (filteredStocks.length === 0) {
-        stocksGrid.innerHTML = "<p>No matching stocks found.</p>";
-        return;
-      }
+    if (searchValue) {
+      filteredStocks = filteredStocks.filter(stock =>
+        stock.symbol.toLowerCase().includes(searchValue) ||
+        stock.company.toLowerCase().includes(searchValue)
+      );
+    }
 
-      stocksGrid.innerHTML = filteredStocks.map(stock => `
-        <div class="stock-card">
-          <div class="stock-top">
-            <div>
-              <h3>${stock.symbol}</h3>
-              <p>${stock.company}</p>
-            </div>
-            <div class="stock-price">
-              <div class="price">₹${stock.price}</div>
-              <div class="${stock.change.startsWith('+') ? 'positive' : 'negative'}">${stock.change}</div>
-            </div>
+    if (selectedSector !== "all") {
+      filteredStocks = filteredStocks.filter(stock => stock.sector === selectedSector);
+    }
+
+    if (selectedSort === "high") {
+      filteredStocks.sort((a, b) => b.price - a.price);
+    } else if (selectedSort === "low") {
+      filteredStocks.sort((a, b) => a.price - b.price);
+    }
+
+    if (filteredStocks.length === 0) {
+      stocksGrid.innerHTML = "<p>No matching stocks found.</p>";
+      return;
+    }
+
+    stocksGrid.innerHTML = filteredStocks.map(stock => `
+      <div class="stock-card">
+        <div class="stock-top">
+          <div>
+            <h3>${stock.symbol}</h3>
+            <p>${stock.company}</p>
           </div>
-
-          <div class="stock-meta">
-            <span>Sector: ${stock.sector}</span>
-            <span>Volume: ${stock.volume}</span>
-          </div>
-
-          <div class="stock-actions">
-            <button class="action-btn buy-btn" onclick="buyStock('${stock.symbol}')">Buy</button>
-            <button class="action-btn sell-btn" onclick="sellStock('${stock.symbol}')">Sell</button>
-            <button class="action-btn watch-btn" onclick="addToWatchlist('${stock.symbol}')">Watchlist</button>
+          <div class="stock-price">
+            <div class="price">₹${stock.price}</div>
+            <div class="${stock.change.startsWith('+') ? 'positive' : 'negative'}">${stock.change}</div>
           </div>
         </div>
-      `).join("");
-    }
 
-    function buyStock(symbol) {
-      alert(`Buy action clicked for ${symbol}. This will later connect to backend.`);
-    }
+        <div class="stock-meta">
+          <span>Sector: ${stock.sector}</span>
+          <span>Volume: ${stock.volume}</span>
+        </div>
 
-    function sellStock(symbol) {
-      alert(`Sell action clicked for ${symbol}. This will later connect to backend.`);
-    }
+        <div class="stock-actions">
+          <button class="action-btn buy-btn" onclick="buyStock('${stock.symbol}')">Buy</button>
+          <button class="action-btn sell-btn" onclick="sellStock('${stock.symbol}')">Sell</button>
+          <button class="action-btn watch-btn" onclick="addToWatchlist('${stock.symbol}')">Watchlist</button>
+        </div>
+      </div>
+    `).join("");
+  }
 
-    function addToWatchlist(symbol) {
-      alert(`${symbol} added to watchlist. This will later connect to backend.`);
-    }
+  function buyStock(symbol) {
+    alert(`Buy action clicked for ${symbol}. This will later connect to backend.`);
+  }
 
-    searchInput.addEventListener("input", renderStocks);
-    sectorFilter.addEventListener("change", renderStocks);
-    sortFilter.addEventListener("change", renderStocks);
+  function sellStock(symbol) {
+    alert(`Sell action clicked for ${symbol}. This will later connect to backend.`);
+  }
 
-    renderStocks();
-  </script>
+  function addToWatchlist(symbol) {
+    alert(`${symbol} added to watchlist. This will later connect to backend.`);
+  }
+
+  searchInput.addEventListener("input", renderStocks);
+  sectorFilter.addEventListener("change", renderStocks);
+  sortFilter.addEventListener("change", renderStocks);
+
+  renderStocks();
+</script>
 </body>
 </html>

@@ -334,7 +334,7 @@
   const loginForm = document.getElementById("loginForm");
   const message = document.getElementById("message");
 
-  loginForm.addEventListener("submit", function (e) {
+  loginForm.addEventListener("submit", async function (e) {
     e.preventDefault();
 
     const email = document.getElementById("email").value.trim();
@@ -346,21 +346,37 @@
       return;
     }
 
-    const savedName = localStorage.getItem("tradewiseRegisteredName");
-    const savedEmail = localStorage.getItem("tradewiseRegisteredEmail");
+    message.textContent = "Signing in...";
+    message.style.color = "#38bdf8";
 
-    if (savedEmail && email === savedEmail) {
-      localStorage.setItem("tradewiseCurrentUser", savedName);
-    } else {
-      localStorage.setItem("tradewiseCurrentUser", "Trader");
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/auth/login?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`,
+        {
+          method: "POST"
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Invalid email or password");
+      }
+
+      const user = await response.json();
+
+      localStorage.setItem("tradewiseCurrentUser", user.fullName);
+      localStorage.setItem("tradewiseCurrentUserEmail", user.email);
+      localStorage.setItem("tradewiseCurrentUserBalance", user.balance);
+
+      message.textContent = "Login successful! Redirecting...";
+      message.style.color = "#22c55e";
+
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 1000);
+    } catch (error) {
+      message.textContent = error.message || "Login failed. Please try again.";
+      message.style.color = "#ef4444";
     }
-
-    message.textContent = "Login successful! Redirecting...";
-    message.style.color = "#22c55e";
-
-    setTimeout(() => {
-      window.location.href = "dashboard.html";
-    }, 1000);
   });
 </script>
 </body>
