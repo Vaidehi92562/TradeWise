@@ -807,12 +807,106 @@
     }
   }
 
-  function sellStock(symbol) {
-    alert(`Sell action clicked for ${symbol}. This will later connect to backend.`);
+  async function sellStock(symbol) {
+    const selectedStock = stocks.find(stock => stock.symbol === symbol);
+
+    if (!selectedStock) {
+      alert("Stock not found.");
+      return;
+    }
+
+    if (!storedEmail) {
+      alert("User email not found. Please login again.");
+      window.location.href = "login.html";
+      return;
+    }
+
+    const quantityInput = prompt(`Enter quantity to sell for ${symbol}:`);
+
+    if (!quantityInput) return;
+
+    const quantity = parseInt(quantityInput, 10);
+
+    if (isNaN(quantity) || quantity <= 0) {
+      alert("Please enter a valid quantity.");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:8080/api/trades/sell", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email: storedEmail,
+          stockSymbol: selectedStock.symbol,
+          stockName: selectedStock.company,
+          quantity: quantity,
+          price: selectedStock.price
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Sell request failed");
+      }
+
+      const soldTrade = await response.json();
+
+      const currentBalance = Number(localStorage.getItem("tradewiseCurrentUserBalance") || 0);
+      const totalValue = soldTrade.price * soldTrade.quantity;
+      const updatedBalance = currentBalance + totalValue;
+
+      localStorage.setItem("tradewiseCurrentUserBalance", updatedBalance);
+
+      alert(`Successfully sold ${quantity} share(s) of ${symbol}.`);
+    } catch (error) {
+      alert(error.message || "Something went wrong while selling stock.");
+    }
   }
 
-  function addToWatchlist(symbol) {
-    alert(`${symbol} added to watchlist. This will later connect to backend.`);
+  async function addToWatchlist(symbol) {
+    const selectedStock = stocks.find(stock => stock.symbol === symbol);
+
+    if (!selectedStock) {
+      alert("Stock not found.");
+      return;
+    }
+
+    if (!storedEmail) {
+      alert("User email not found. Please login again.");
+      window.location.href = "login.html";
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:8080/api/watchlist/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email: storedEmail,
+          stockSymbol: selectedStock.symbol,
+          stockName: selectedStock.company
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Watchlist request failed");
+      }
+
+      await response.json();
+      alert(`${symbol} added to watchlist successfully.`);
+    } catch (error) {
+      if ((error.message || "").toLowerCase().includes("already")) {
+        alert(`${symbol} is already in your watchlist.`);
+      } else {
+        alert(error.message || "Something went wrong while adding to watchlist.");
+      }
+    }
   }
 
   searchInput.addEventListener("input", renderStocks);

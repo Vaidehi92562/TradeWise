@@ -486,6 +486,7 @@
 
  <script>
   const storedUser = localStorage.getItem("tradewiseCurrentUser");
+  const storedEmail = localStorage.getItem("tradewiseCurrentUserEmail");
 
   if (!storedUser) {
     window.location.href = "login.html";
@@ -498,44 +499,100 @@
     window.location.href = "login.html";
   }
 
-  const watchlistStocks = [
-    {
-      symbol: "TCS",
-      company: "Tata Consultancy Services",
+  const stockCatalog = {
+    TCS: {
       price: 3950,
       change: "+1.8%",
       sector: "IT",
       note: "Stable uptrend with consistent IT momentum."
     },
-    {
-      symbol: "INFY",
-      company: "Infosys",
+    INFY: {
       price: 1450,
       change: "+0.9%",
       sector: "IT",
       note: "Strong tech candidate for medium-term watch."
     },
-    {
-      symbol: "RELIANCE",
-      company: "Reliance Industries",
+    RELIANCE: {
       price: 2800,
       change: "-0.4%",
       sector: "Energy",
       note: "Large-cap diversified stock under close observation."
     },
-    {
-      symbol: "HDFCBANK",
-      company: "HDFC Bank",
+    HDFCBANK: {
       price: 1580,
       change: "+1.2%",
       sector: "Banking",
       note: "Strong private banking stock with upward strength."
+    },
+    ICICIBANK: {
+      price: 1215,
+      change: "+0.6%",
+      sector: "Finance",
+      note: "Large private bank under strong market observation."
+    },
+    WIPRO: {
+      price: 540,
+      change: "-0.2%",
+      sector: "IT",
+      note: "Moderate volatility with long-term watch potential."
     }
-  ];
+  };
 
   const watchCards = document.getElementById("watchCards");
+  let watchlistStocks = [];
+
+  async function fetchWatchlist() {
+    if (!storedEmail) {
+      alert("User email not found. Please login again.");
+      window.location.href = "login.html";
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/watchlist/user?email=${encodeURIComponent(storedEmail)}`
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to load watchlist");
+      }
+
+      const data = await response.json();
+
+      watchlistStocks = data.map(item => {
+        const stockData = stockCatalog[item.stockSymbol] || {
+          price: 0,
+          change: "0%",
+          sector: "Stock",
+          note: "Added to your watchlist."
+        };
+
+        return {
+          symbol: item.stockSymbol,
+          company: item.stockName,
+          price: stockData.price,
+          change: stockData.change,
+          sector: stockData.sector,
+          note: stockData.note
+        };
+      });
+
+      renderWatchlist();
+    } catch (error) {
+      watchCards.innerHTML = `
+        <p style="color:#f87171; text-align:center;">Failed to load watchlist.</p>
+      `;
+    }
+  }
 
   function renderWatchlist() {
+    if (!watchlistStocks.length) {
+      watchCards.innerHTML = `
+        <p style="color:#cbd5e1; text-align:center;">Your watchlist is empty.</p>
+      `;
+      return;
+    }
+
     watchCards.innerHTML = watchlistStocks.map(stock => `
       <div class="watch-card">
         <div class="watch-top">
@@ -544,7 +601,7 @@
             <p>${stock.company}</p>
           </div>
           <div class="watch-price">
-            <div class="price">₹${stock.price}</div>
+            <div class="price">₹${Number(stock.price).toLocaleString("en-IN")}</div>
             <div class="${stock.change.startsWith('+') ? 'positive' : 'negative'}">${stock.change}</div>
           </div>
         </div>
@@ -570,7 +627,7 @@
 
         <div class="watch-actions">
           <button class="action-btn buy-btn" onclick="buyNow('${stock.symbol}')">Buy Now</button>
-          <button class="action-btn remove-btn" onclick="removeFromWatchlist('${stock.symbol}')">Remove</button>
+          <button class="action-btn remove-btn" onclick="removeFromWatchlist('${stock.symbol}', '${stock.company}')">Remove</button>
           <button class="action-btn details-btn" onclick="viewStockDetails('${stock.symbol}')">Details</button>
         </div>
       </div>
@@ -578,18 +635,46 @@
   }
 
   function buyNow(symbol) {
-    alert(`Buy now clicked for ${symbol}. This will later connect to backend.`);
+    window.location.href = "market.html";
   }
 
-  function removeFromWatchlist(symbol) {
-    alert(`Remove clicked for ${symbol}. This will later connect to backend.`);
+  async function removeFromWatchlist(symbol, company) {
+    if (!storedEmail) {
+      alert("User email not found. Please login again.");
+      window.location.href = "login.html";
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:8080/api/watchlist/remove", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email: storedEmail,
+          stockSymbol: symbol,
+          stockName: company
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Remove request failed");
+      }
+
+      alert(`${symbol} removed from watchlist.`);
+      fetchWatchlist();
+    } catch (error) {
+      alert(error.message || "Something went wrong while removing from watchlist.");
+    }
   }
 
   function viewStockDetails(symbol) {
-    alert(`Details clicked for ${symbol}. This will later connect to backend.`);
+    alert(`Details clicked for ${symbol}.`);
   }
 
-  renderWatchlist();
+  fetchWatchlist();
 </script>
 </body>
 </html>
