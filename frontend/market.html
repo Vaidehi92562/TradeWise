@@ -623,6 +623,7 @@
 
   <script>
   const storedUser = localStorage.getItem("tradewiseCurrentUser");
+  const storedEmail = localStorage.getItem("tradewiseCurrentUserEmail");
 
   if (!storedUser) {
     window.location.href = "login.html";
@@ -747,8 +748,63 @@
     `).join("");
   }
 
-  function buyStock(symbol) {
-    alert(`Buy action clicked for ${symbol}. This will later connect to backend.`);
+  async function buyStock(symbol) {
+    const selectedStock = stocks.find(stock => stock.symbol === symbol);
+
+    if (!selectedStock) {
+      alert("Stock not found.");
+      return;
+    }
+
+    if (!storedEmail) {
+      alert("User email not found. Please login again.");
+      window.location.href = "login.html";
+      return;
+    }
+
+    const quantityInput = prompt(`Enter quantity to buy for ${symbol}:`);
+
+    if (!quantityInput) return;
+
+    const quantity = parseInt(quantityInput, 10);
+
+    if (isNaN(quantity) || quantity <= 0) {
+      alert("Please enter a valid quantity.");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:8080/api/trades/buy", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email: storedEmail,
+          stockSymbol: selectedStock.symbol,
+          stockName: selectedStock.company,
+          quantity: quantity,
+          price: selectedStock.price
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Buy request failed");
+      }
+
+      const boughtTrade = await response.json();
+
+      const currentBalance = Number(localStorage.getItem("tradewiseCurrentUserBalance") || 0);
+      const totalCost = boughtTrade.price * boughtTrade.quantity;
+      const updatedBalance = currentBalance - totalCost;
+
+      localStorage.setItem("tradewiseCurrentUserBalance", updatedBalance);
+
+      alert(`Successfully bought ${quantity} share(s) of ${symbol}.`);
+    } catch (error) {
+      alert(error.message || "Something went wrong while buying stock.");
+    }
   }
 
   function sellStock(symbol) {

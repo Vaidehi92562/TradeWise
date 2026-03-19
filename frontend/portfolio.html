@@ -540,8 +540,9 @@
     </section>
   </div>
 
-  <script>
+ <script>
   const storedUser = localStorage.getItem("tradewiseCurrentUser");
+  const storedEmail = localStorage.getItem("tradewiseCurrentUserEmail");
 
   if (!storedUser) {
     window.location.href = "login.html";
@@ -554,44 +555,52 @@
     window.location.href = "login.html";
   }
 
-  const holdings = [
-    {
-      symbol: "TCS",
-      company: "Tata Consultancy Services",
-      quantity: 10,
-      avgPrice: 3600,
-      currentPrice: 3950,
-      sector: "IT"
-    },
-    {
-      symbol: "HDFCBANK",
-      company: "HDFC Bank",
-      quantity: 12,
-      avgPrice: 1490,
-      currentPrice: 1580,
-      sector: "Banking"
-    },
-    {
-      symbol: "RELIANCE",
-      company: "Reliance Industries",
-      quantity: 6,
-      avgPrice: 2700,
-      currentPrice: 2800,
-      sector: "Energy"
-    },
-    {
-      symbol: "INFY",
-      company: "Infosys",
-      quantity: 8,
-      avgPrice: 1380,
-      currentPrice: 1450,
-      sector: "IT"
-    }
-  ];
-
   const holdingsList = document.getElementById("holdingsList");
+  let holdings = [];
+
+  async function fetchPortfolio() {
+    if (!storedEmail) {
+      alert("User email not found. Please login again.");
+      window.location.href = "login.html";
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/trades/portfolio?email=${encodeURIComponent(storedEmail)}`
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to load portfolio");
+      }
+
+      const data = await response.json();
+
+      holdings = data.map(stock => ({
+        symbol: stock.stockSymbol,
+        company: stock.stockName,
+        quantity: stock.totalQuantity,
+        avgPrice: stock.averagePrice,
+        currentPrice: stock.averagePrice,
+        sector: "Stock"
+      }));
+
+      renderHoldings();
+    } catch (error) {
+      holdingsList.innerHTML = `
+        <p style="color:#f87171; text-align:center;">Failed to load portfolio.</p>
+      `;
+    }
+  }
 
   function renderHoldings() {
+    if (holdings.length === 0) {
+      holdingsList.innerHTML = `
+        <p style="color:#cbd5e1; text-align:center;">No holdings found.</p>
+      `;
+      return;
+    }
+
     holdingsList.innerHTML = holdings.map(stock => {
       const invested = stock.quantity * stock.avgPrice;
       const currentValue = stock.quantity * stock.currentPrice;
@@ -606,8 +615,10 @@
               <p>${stock.company}</p>
             </div>
             <div class="holding-value">
-              <div class="price">₹${currentValue.toLocaleString()}</div>
-              <div class="${pnlClass}">${pnl >= 0 ? "+" : ""}₹${pnl.toLocaleString()}</div>
+              <div class="price">₹${Number(currentValue).toLocaleString("en-IN")}</div>
+              <div class="${pnlClass}">
+                ${pnl >= 0 ? "+" : ""}₹${Number(pnl).toLocaleString("en-IN")}
+              </div>
             </div>
           </div>
 
@@ -618,11 +629,11 @@
             </div>
             <div class="meta-box">
               <div class="meta-label">Avg Buy Price</div>
-              <div class="meta-value">₹${stock.avgPrice}</div>
+              <div class="meta-value">₹${Number(stock.avgPrice).toLocaleString("en-IN")}</div>
             </div>
             <div class="meta-box">
               <div class="meta-label">Current Price</div>
-              <div class="meta-value">₹${stock.currentPrice}</div>
+              <div class="meta-value">₹${Number(stock.currentPrice).toLocaleString("en-IN")}</div>
             </div>
             <div class="meta-box">
               <div class="meta-label">Sector</div>
@@ -632,7 +643,7 @@
 
           <div class="holding-actions">
             <button class="action-btn buy-btn" onclick="buyMore('${stock.symbol}')">Buy More</button>
-            <button class="action-btn sell-btn" onclick="sellHolding('${stock.symbol}')">Sell</button>
+            <button class="action-btn sell-btn" onclick="sellHolding('${stock.symbol}', '${stock.company}', ${stock.currentPrice}, ${stock.quantity})">Sell</button>
             <button class="action-btn details-btn" onclick="viewDetails('${stock.symbol}')">Details</button>
           </div>
         </div>
@@ -641,18 +652,72 @@
   }
 
   function buyMore(symbol) {
-    alert(`Buy more clicked for ${symbol}. This will later connect to backend.`);
+    window.location.href = "market.html";
   }
 
-  function sellHolding(symbol) {
-    alert(`Sell clicked for ${symbol}. This will later connect to backend.`);
+  async function sellHolding(symbol, company, price, availableQuantity) {
+    if (!storedEmail) {
+      alert("User email not found. Please login again.");
+      window.location.href = "login.html";
+      return;
+    }
+
+    const quantityInput = prompt(`Enter quantity to sell for ${symbol} (Available: ${availableQuantity}):`);
+
+    if (!quantityInput) return;
+
+    const quantity = parseInt(quantityInput, 10);
+
+    if (isNaN(quantity) || quantity <= 0) {
+      alert("Please enter a valid quantity.");
+      return;
+    }
+
+    if (quantity > availableQuantity) {
+      alert("You do not have enough quantity to sell.");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:8080/api/trades/sell", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email: storedEmail,
+          stockSymbol: symbol,
+          stockName: company,
+          quantity: quantity,
+          price: price
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Sell request failed");
+      }
+
+      const soldTrade = await response.json();
+
+      const currentBalance = Number(localStorage.getItem("tradewiseCurrentUserBalance") || 0);
+      const totalValue = soldTrade.price * soldTrade.quantity;
+      const updatedBalance = currentBalance + totalValue;
+
+      localStorage.setItem("tradewiseCurrentUserBalance", updatedBalance);
+
+      alert(`Successfully sold ${quantity} share(s) of ${symbol}.`);
+      fetchPortfolio();
+    } catch (error) {
+      alert(error.message || "Something went wrong while selling stock.");
+    }
   }
 
   function viewDetails(symbol) {
-    alert(`Details clicked for ${symbol}. This will later connect to backend.`);
+    alert(`Details clicked for ${symbol}.`);
   }
 
-  renderHoldings();
+  fetchPortfolio();
 </script>
 </body>
 </html>

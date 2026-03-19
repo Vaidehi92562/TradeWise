@@ -426,6 +426,7 @@
 
   <script>
   const storedUser = localStorage.getItem("tradewiseCurrentUser");
+  const storedEmail = localStorage.getItem("tradewiseCurrentUserEmail");
 
   if (!storedUser) {
     window.location.href = "login.html";
@@ -438,19 +439,52 @@
     window.location.href = "login.html";
   }
 
-  const transactions = [
-    { date: "2026-03-18 10:30", symbol: "TCS", company: "Tata Consultancy Services", type: "BUY", quantity: 10, price: 3950, status: "Completed" },
-    { date: "2026-03-17 15:10", symbol: "INFY", company: "Infosys", type: "SELL", quantity: 5, price: 1450, status: "Completed" },
-    { date: "2026-03-16 12:20", symbol: "HDFCBANK", company: "HDFC Bank", type: "BUY", quantity: 12, price: 1580, status: "Completed" },
-    { date: "2026-03-15 11:40", symbol: "RELIANCE", company: "Reliance Industries", type: "BUY", quantity: 6, price: 2800, status: "Completed" },
-    { date: "2026-03-14 14:05", symbol: "ICICIBANK", company: "ICICI Bank", type: "SELL", quantity: 4, price: 1215, status: "Completed" },
-    { date: "2026-03-13 09:55", symbol: "WIPRO", company: "Wipro", type: "BUY", quantity: 15, price: 540, status: "Completed" }
-  ];
-
   const transactionsBody = document.getElementById("transactionsBody");
   const searchInput = document.getElementById("searchInput");
   const typeFilter = document.getElementById("typeFilter");
   const sortFilter = document.getElementById("sortFilter");
+
+  let transactions = [];
+
+  async function fetchTransactions() {
+    if (!storedEmail) {
+      alert("User email not found. Please login again.");
+      window.location.href = "login.html";
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/trades/user?email=${encodeURIComponent(storedEmail)}`
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to load transactions");
+      }
+
+      const trades = await response.json();
+
+      transactions = trades.map(trade => ({
+        date: "Recent",
+        symbol: trade.stockSymbol,
+        company: trade.stockName,
+        type: trade.type,
+        quantity: trade.quantity,
+        price: trade.price,
+        status: "Completed"
+      }));
+
+      renderTransactions();
+    } catch (error) {
+      transactionsBody.innerHTML = `
+        <tr>
+          <td colspan="7" style="text-align:center; color:#f87171;">
+            Failed to load transactions
+          </td>
+        </tr>
+      `;
+    }
+  }
 
   function renderTransactions() {
     let filtered = [...transactions];
@@ -470,9 +504,18 @@
     }
 
     if (selectedSort === "latest") {
-      filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
-    } else {
-      filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
+      filtered.reverse();
+    }
+
+    if (filtered.length === 0) {
+      transactionsBody.innerHTML = `
+        <tr>
+          <td colspan="7" style="text-align:center; color:#cbd5e1;">
+            No transactions found.
+          </td>
+        </tr>
+      `;
+      return;
     }
 
     transactionsBody.innerHTML = filtered.map(tx => {
@@ -488,8 +531,8 @@
             <span class="type-badge ${tx.type === 'BUY' ? 'buy-badge' : 'sell-badge'}">${tx.type}</span>
           </td>
           <td>${tx.quantity}</td>
-          <td>₹${tx.price.toLocaleString()}</td>
-          <td>₹${total.toLocaleString()}</td>
+          <td>₹${Number(tx.price).toLocaleString("en-IN")}</td>
+          <td>₹${Number(total).toLocaleString("en-IN")}</td>
           <td style="color:#cbd5e1;">${tx.status}</td>
         </tr>
       `;
@@ -500,7 +543,7 @@
   typeFilter.addEventListener("change", renderTransactions);
   sortFilter.addEventListener("change", renderTransactions);
 
-  renderTransactions();
+  fetchTransactions();
 </script>
 </body>
 </html>
