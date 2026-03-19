@@ -110,3 +110,10 @@ TradeWise/
 │
 ├── docker-compose.yml
 └── README.md
+
+
+## Architecture Diagram
+
+The following diagram shows the overall software engineering architecture, DevOps workflow, Docker-based orchestration, monitoring stack, and Kubernetes deployment structure used in the TradeWise project.
+
+![TradeWise Architecture Diagram](docs/images/tradewise-architecture.png)
