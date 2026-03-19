@@ -1,38 +1,112 @@
-# TradeWise
+# TradeWise - A Smart Mock Trading Platform Simulation
 
-TradeWise is a DevOps-oriented virtual trading simulator project.
+## Project Overview
+TradeWise is a smart mock trading platform simulation developed as part of the course **21IPE333P – Essentials in Cloud and DevOps**.  
+The platform allows users to explore stock trading concepts in a safe, risk-free environment using virtual money. It is designed to simulate core trading workflows such as user login, stock browsing, buy/sell actions, watchlist management, portfolio tracking, and transaction monitoring.
 
-## Project Objective
-The goal of this project is to build a stock trading simulation platform where users can:
-- register and log in
-- view market data
-- buy and sell stocks using virtual balance
-- manage portfolio
-- maintain watchlist
-- view transaction history
+Along with the software engineering aspects of the application, the project also demonstrates important **Cloud and DevOps practices** including containerization, service orchestration, continuous integration, monitoring, observability, and Kubernetes-based deployment setup.
+
+---
+
+## Objective
+The main objective of TradeWise is to provide a simple and interactive stock trading simulation platform where users can practice trading logic without using real money, while also showcasing practical implementation of DevOps tools and workflows.
+
+---
+
+## Course Details
+- **Course Code:** 21IPE333P  
+- **Course Name:** Essentials in Cloud and DevOps  
+- **Faculty:** Dr. L. Anand  
+
+---
+
+## Team Members
+- **RA2311003011138** – Aditya Prasad  
+- **RA2311003011148** – Eiswar G  
+- **RA2311003011168** – Vaidehi Mishra  
+
+---
+
+## Key Features
+- User registration and login
+- Dashboard with personalized user data
+- Stock market page for mock trading
+- Buy stock functionality
+- Sell stock functionality
+- Portfolio tracking
+- Transaction history
+- Watchlist management
+- MySQL database integration
+- Dockerized backend and frontend
+- Docker Compose orchestration
+- GitHub Actions CI pipeline
+- Spring Boot Actuator health and metrics endpoints
+- Prometheus monitoring
+- Grafana dashboard visualization
+- Kubernetes YAML-based deployment setup
+
+---
 
 ## Tech Stack
-- Frontend: HTML, CSS, JavaScript
-- Backend: Spring Boot, Maven
-- Database: MySQL
-- DevOps: Git, GitHub, GitHub Actions, Docker, Docker Compose, Prometheus, Grafana, Kubernetes
 
-## Planned Features
-- User authentication
-- Dashboard
-- Market page
-- Portfolio tracking
-- Watchlist
-- Transactions history
-- CI/CD pipeline
-- Monitoring and observability
+### Frontend
+- HTML
+- CSS
+- JavaScript
+
+### Backend
+- Java
+- Spring Boot
+- Maven
+
+### Database
+- MySQL
+
+### DevOps / Cloud Tools
+- Git & GitHub
+- GitHub Actions
+- Docker
+- Docker Compose
+- Spring Boot Actuator
+- Prometheus
+- Grafana
+- Kubernetes
+
+---
 
 ## Project Structure
-- `frontend/` → HTML pages and assets
-- `backend/` → Spring Boot backend
-- `docker/` → Docker and Compose files
-- `k8s/` → Kubernetes manifests
-- `.github/workflows/` → CI pipeline files
-
-## Status
-Project initialized successfully. Development in progress.
+```text
+TradeWise/
+│
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+│
+├── backend/
+│   ├── src/
+│   ├── Dockerfile
+│   ├── pom.xml
+│   └── mvnw
+│
+├── frontend/
+│   ├── assets/
+│   ├── index.html
+│   ├── login.html
+│   ├── register.html
+│   ├── dashboard.html
+│   ├── market.html
+│   ├── portfolio.html
+│   ├── transactions.html
+│   ├── watchlist.html
+│   └── Dockerfile
+│
+├── k8s/
+│   ├── mysql.yaml
+│   ├── backend.yaml
+│   └── frontend.yaml
+│
+├── docker/
+│   └── prometheus.yml
+│
+├── docker-compose.yml
+└── README.md
