@@ -491,16 +491,16 @@
         <div class="hero-bottom">
           <div class="hero-mini-stats">
             <div class="mini-stat">
-              <h3>₹1L+</h3>
+              <h3 id="heroBalance">₹0</h3>
               <p>Virtual capital ready for stock simulation</p>
             </div>
             <div class="mini-stat">
-              <h3>08</h3>
+              <h3 id="heroHoldings">00</h3>
               <p>Active stocks in your portfolio watch zone</p>
             </div>
             <div class="mini-stat">
-              <h3>+12.4%</h3>
-              <p>Portfolio momentum this month</p>
+              <h3 id="heroPnL">₹0</h3>
+              <p>Portfolio momentum based on current holdings</p>
             </div>
           </div>
         </div>
@@ -537,28 +537,28 @@
     </section>
 
     <section class="stats-grid">
-     <div class="stat-card">
-  <div class="label">Available Balance</div>
-  <h2 id="userBalance">₹1,00,000</h2>
-  <div class="trend">+ Ready to invest</div>
-</div>
-
       <div class="stat-card">
-        <div class="label">Portfolio Value</div>
-        <h2>₹1,24,500</h2>
-        <div class="trend">+12.4% this month</div>
+        <div class="label">Available Balance</div>
+        <h2 id="userBalance">₹0</h2>
+        <div class="trend">Ready to invest</div>
       </div>
 
       <div class="stat-card">
-        <div class="label">Today's Profit/Loss</div>
-        <h2>+₹2,850</h2>
-        <div class="trend">+2.3% today</div>
+        <div class="label">Portfolio Value</div>
+        <h2 id="portfolioValue">₹0</h2>
+        <div class="trend">Live from your holdings</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="label">Net Profit/Loss</div>
+        <h2 id="netProfitLoss">₹0</h2>
+        <div class="trend">Based on current holdings</div>
       </div>
 
       <div class="stat-card">
         <div class="label">Stocks Owned</div>
-        <h2>08</h2>
-        <div class="trend">Across multiple sectors</div>
+        <h2 id="holdingsCount">00</h2>
+        <div class="trend">Across your current portfolio</div>
       </div>
     </section>
 
@@ -576,6 +576,38 @@
         </div>
 
         <div class="panel-header">
+          <div class="subheading">Portfolio Snapshot</div>
+          <a href="portfolio.html">Open portfolio</a>
+        </div>
+
+        <table class="activity-table">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Total Invested</td>
+              <td id="totalInvested">₹0</td>
+            </tr>
+            <tr>
+              <td>Current Portfolio Value</td>
+              <td id="tablePortfolioValue">₹0</td>
+            </tr>
+            <tr>
+              <td>Net Profit / Loss</td>
+              <td id="tableNetProfitLoss">₹0</td>
+            </tr>
+            <tr>
+              <td>Total Holdings</td>
+              <td id="tableHoldingsCount">00</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="panel-header" style="margin-top: 24px;">
           <div class="subheading">Recent Activity</div>
           <a href="transactions.html">See all</a>
         </div>
@@ -589,30 +621,9 @@
               <th>Amount</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="recentActivityBody">
             <tr>
-              <td>TCS</td>
-              <td class="buy">BUY</td>
-              <td>10</td>
-              <td>₹39,500</td>
-            </tr>
-            <tr>
-              <td>INFY</td>
-              <td class="sell">SELL</td>
-              <td>5</td>
-              <td>₹7,250</td>
-            </tr>
-            <tr>
-              <td>HDFCBANK</td>
-              <td class="buy">BUY</td>
-              <td>12</td>
-              <td>₹18,960</td>
-            </tr>
-            <tr>
-              <td>RELIANCE</td>
-              <td class="buy">BUY</td>
-              <td>6</td>
-              <td>₹16,800</td>
+              <td colspan="4">Loading recent activity...</td>
             </tr>
           </tbody>
         </table>
@@ -661,36 +672,171 @@
     </section>
   </div>
 
-<script>
-  function goToPage(page) {
-    window.location.href = page;
-  }
+  <script>
+    function goToPage(page) {
+      window.location.href = page;
+    }
 
-  function logoutUser() {
-    localStorage.removeItem("tradewiseCurrentUser");
-    localStorage.removeItem("tradewiseCurrentUserEmail");
-    localStorage.removeItem("tradewiseCurrentUserBalance");
-    window.location.href = "login.html";
-  }
+    function logoutUser() {
+      localStorage.removeItem("tradewiseCurrentUser");
+      localStorage.removeItem("tradewiseCurrentUserEmail");
+      localStorage.removeItem("tradewiseCurrentUserBalance");
+      window.location.href = "login.html";
+    }
 
-  const storedUser = localStorage.getItem("tradewiseCurrentUser");
-  const storedBalance = localStorage.getItem("tradewiseCurrentUserBalance");
+    const storedUser = localStorage.getItem("tradewiseCurrentUser");
+    const storedEmail = localStorage.getItem("tradewiseCurrentUserEmail");
+    const storedBalance = localStorage.getItem("tradewiseCurrentUserBalance");
 
-  if (!storedUser) {
-    window.location.href = "login.html";
-  }
+    if (!storedUser) {
+      window.location.href = "login.html";
+    }
 
-  const userNameElement = document.getElementById("userName");
-  const userBalanceElement = document.getElementById("userBalance");
+    const userNameElement = document.getElementById("userName");
+    const userBalanceElement = document.getElementById("userBalance");
+    const holdingsCountElement = document.getElementById("holdingsCount");
+    const totalInvestedElement = document.getElementById("totalInvested");
+    const portfolioValueElement = document.getElementById("portfolioValue");
+    const netProfitLossElement = document.getElementById("netProfitLoss");
 
-  if (storedUser && userNameElement) {
-    userNameElement.textContent = storedUser;
-  }
+    const heroBalanceElement = document.getElementById("heroBalance");
+    const heroHoldingsElement = document.getElementById("heroHoldings");
+    const heroPnLElement = document.getElementById("heroPnL");
+    const tablePortfolioValueElement = document.getElementById("tablePortfolioValue");
+    const tableNetProfitLossElement = document.getElementById("tableNetProfitLoss");
+    const tableHoldingsCountElement = document.getElementById("tableHoldingsCount");
+    const recentActivityBody = document.getElementById("recentActivityBody");
 
-  if (storedBalance && userBalanceElement) {
-    const formattedBalance = Number(storedBalance).toLocaleString("en-IN");
-    userBalanceElement.textContent = `₹${formattedBalance}`;
-  }
-</script>
+    if (storedUser && userNameElement) {
+      userNameElement.textContent = storedUser;
+    }
+
+    if (storedBalance && userBalanceElement) {
+      const formattedBalance = Number(storedBalance).toLocaleString("en-IN");
+      userBalanceElement.textContent = `₹${formattedBalance}`;
+
+      if (heroBalanceElement) {
+        heroBalanceElement.textContent = `₹${formattedBalance}`;
+      }
+    }
+
+    async function loadDashboardStats() {
+      if (!storedEmail) {
+        return;
+      }
+
+      try {
+        const portfolioResponse = await fetch(
+          `http://localhost:8080/api/trades/portfolio?email=${encodeURIComponent(storedEmail)}`
+        );
+
+        if (!portfolioResponse.ok) {
+          throw new Error("Failed to load portfolio stats");
+        }
+
+        const holdings = await portfolioResponse.json();
+
+        const holdingsCount = holdings.length;
+
+        const totalInvested = holdings.reduce((sum, stock) => {
+          return sum + Number(stock.investedAmount || 0);
+        }, 0);
+
+        const portfolioValue = holdings.reduce((sum, stock) => {
+          const qty = Number(stock.totalQuantity || 0);
+          const avg = Number(stock.averagePrice || 0);
+          return sum + (qty * avg);
+        }, 0);
+
+        const netProfitLoss = portfolioValue - totalInvested;
+
+        if (holdingsCountElement) {
+          holdingsCountElement.textContent = String(holdingsCount).padStart(2, "0");
+        }
+
+        if (tableHoldingsCountElement) {
+          tableHoldingsCountElement.textContent = String(holdingsCount).padStart(2, "0");
+        }
+
+        if (heroHoldingsElement) {
+          heroHoldingsElement.textContent = String(holdingsCount).padStart(2, "0");
+        }
+
+        if (totalInvestedElement) {
+          totalInvestedElement.textContent = `₹${Math.round(totalInvested).toLocaleString("en-IN")}`;
+        }
+
+        if (portfolioValueElement) {
+          portfolioValueElement.textContent = `₹${Math.round(portfolioValue).toLocaleString("en-IN")}`;
+        }
+
+        if (tablePortfolioValueElement) {
+          tablePortfolioValueElement.textContent = `₹${Math.round(portfolioValue).toLocaleString("en-IN")}`;
+        }
+
+        const sign = netProfitLoss >= 0 ? "+" : "-";
+        const formattedPnL = `${sign}₹${Math.abs(Math.round(netProfitLoss)).toLocaleString("en-IN")}`;
+
+        if (netProfitLossElement) {
+          netProfitLossElement.textContent = formattedPnL;
+          netProfitLossElement.className = netProfitLoss >= 0 ? "positive" : "negative";
+        }
+
+        if (tableNetProfitLossElement) {
+          tableNetProfitLossElement.textContent = formattedPnL;
+          tableNetProfitLossElement.className = netProfitLoss >= 0 ? "positive" : "negative";
+        }
+
+        if (heroPnLElement) {
+          heroPnLElement.textContent = formattedPnL;
+          heroPnLElement.className = netProfitLoss >= 0 ? "positive" : "negative";
+        }
+
+        const tradesResponse = await fetch(
+          `http://localhost:8080/api/trades/user?email=${encodeURIComponent(storedEmail)}`
+        );
+
+        if (!tradesResponse.ok) {
+          throw new Error("Failed to load recent activity");
+        }
+
+        const trades = await tradesResponse.json();
+        const recentTrades = [...trades].reverse().slice(0, 5);
+
+        if (!recentTrades.length) {
+          recentActivityBody.innerHTML = `
+            <tr>
+              <td colspan="4">No recent activity found.</td>
+            </tr>
+          `;
+        } else {
+          recentActivityBody.innerHTML = recentTrades.map(trade => {
+            const totalAmount = Number(trade.price) * Number(trade.quantity);
+            return `
+              <tr>
+                <td>${trade.stockSymbol}</td>
+                <td class="${trade.type === 'BUY' ? 'buy' : 'sell'}">${trade.type}</td>
+                <td>${trade.quantity}</td>
+                <td>₹${Math.round(totalAmount).toLocaleString("en-IN")}</td>
+              </tr>
+            `;
+          }).join("");
+        }
+
+      } catch (error) {
+        console.log("Dashboard stats load failed:", error.message);
+
+        if (recentActivityBody) {
+          recentActivityBody.innerHTML = `
+            <tr>
+              <td colspan="4">Failed to load recent activity.</td>
+            </tr>
+          `;
+        }
+      }
+    }
+
+    loadDashboardStats();
+  </script>
 </body>
 </html>
